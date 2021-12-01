@@ -1,13 +1,13 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-//
-open System.IO
+﻿open System.IO
+
+let uncurry f (a, b) = f a b
 
 let Part1 () =
     let result =
         File.ReadLines("input.txt")
         |> Seq.map int
         |> Seq.pairwise
-        |> Seq.filter (fun (x,y) -> x < y)
+        |> Seq.filter (uncurry (<))
         |> Seq.length
 
     printf "%d" result
@@ -19,7 +19,7 @@ let Part2 () =
         |> Seq.windowed 3
         |> Seq.map Seq.sum
         |> Seq.pairwise
-        |> Seq.filter (fun (x,y) -> x < y)
+        |> Seq.filter (uncurry (<))
         |> Seq.length
 
     printf "%d" result
