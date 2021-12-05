@@ -2,6 +2,7 @@
 .idea
 *.log
 .vs
+.ionide
 tmp/
 
 */bin
