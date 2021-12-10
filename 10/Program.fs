@@ -1,7 +1,6 @@
 ﻿open System.IO;
 
-let getOpeningChar c =
-    match c with
+let getOpeningChar = function
     | ')' -> '(' | ']' -> '[' | '>' -> '<' | '}' -> '{'
     | _ -> failwith "Invalid brace"
 
@@ -23,19 +22,16 @@ let input =
                     else
                         InvalidChar head
                 | _ -> failwithf "Invalid input '%c'" head
-
         parse' [] list
 
     File.ReadAllLines("input.txt")
     |> Array.map (List.ofSeq >> parse)
 
-let getCompletionStack res =
-    match res with
+let getCompletionStack = function
     | Incomplete x -> Some x
     | _ -> None
 
-let getInvalidChar res =
-    match res with
+let getInvalidChar = function
     | InvalidChar x -> Some x
     | _ -> None
 
@@ -49,9 +45,8 @@ let part2 =
     let scoreMap = Map.ofList [('(', 1L); ('[', 2L); ('{', 3L); ('<', 4L)]
 
     let scores =
-        input
-        |> Array.choose getCompletionStack
-        |> Array.map (List.fold (fun total c -> total * 5L + (Map.find c scoreMap)) 0L)
+        input |> Array.choose getCompletionStack
+        |> Array.map (List.fold (fun total c -> total * 5L + (scoreMap.Item c)) 0L)
         |> Array.sort
 
     scores.[scores.Length / 2]
