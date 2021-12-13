@@ -20,7 +20,7 @@ printfn "%A" part1
 let part2 =
     let getMapping (digits : Set<char>[]) =
         let pick f = Array.pick (fun x -> if f x then Some (x) else None)
-        let (<&>) l r = fun x -> l x && r x
+        let (<&>) l r x = l x && r x
 
         let d1 = digits |> pick (Set.count >> (=) 2)
         let d7 = digits |> pick (Set.count >> (=) 3)
