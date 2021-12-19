@@ -3,7 +3,7 @@
 open FParsec;
 open System.IO;
 
-type Vector = (int * int * int)
+type Vector = (struct (int * int * int))
 type Scanner = int * (Vector list)
 type OrientedScanner = int * (Vector list) * Vector
 
@@ -19,95 +19,98 @@ let parse input =
     | Success (res, _, _) -> res
     | Failure (err, _, _) -> failwith err
 
-let allOrientations =
+let allOrientations : (Vector -> Vector) list =
     [
         // facing X
-        fun (x, y, z) -> (x, y, z)
-        fun (x, y, z) -> (x, -z, y)
-        fun (x, y, z) -> (x, -y, -z)
-        fun (x, y, z) -> (x, z, -y)
+        fun struct (x, y, z) -> (x, y, z)
+        fun struct (x, y, z) -> (x, -z, y)
+        fun struct (x, y, z) -> (x, -y, -z)
+        fun struct (x, y, z) -> (x, z, -y)
 
         // facing -X
-        fun (x, y, z) -> (-x, z, y)
-        fun (x, y, z) -> (-x, -y, z)
-        fun (x, y, z) -> (-x, -z, -y)
-        fun (x, y, z) -> (-x, y, -z)
+        fun struct (x, y, z) -> (-x, z, y)
+        fun struct (x, y, z) -> (-x, -y, z)
+        fun struct (x, y, z) -> (-x, -z, -y)
+        fun struct (x, y, z) -> (-x, y, -z)
 
         // facing Y
-        fun (x, y, z) -> (y, z, x)
-        fun (x, y, z) -> (y, -x, z)
-        fun (x, y, z) -> (y, -z, -x)
-        fun (x, y, z) -> (y, x, -z)
+        fun struct (x, y, z) -> (y, z, x)
+        fun struct (x, y, z) -> (y, -x, z)
+        fun struct (x, y, z) -> (y, -z, -x)
+        fun struct (x, y, z) -> (y, x, -z)
 
         // facing -Y
-        fun (x, y, z) -> (-y, x, z)
-        fun (x, y, z) -> (-y, -z, x)
-        fun (x, y, z) -> (-y, -x, -z)
-        fun (x, y, z) -> (-y, z, -x)
+        fun struct (x, y, z) -> (-y, x, z)
+        fun struct (x, y, z) -> (-y, -z, x)
+        fun struct (x, y, z) -> (-y, -x, -z)
+        fun struct (x, y, z) -> (-y, z, -x)
 
         // facing Z
-        fun (x, y, z) -> (z, x, y)
-        fun (x, y, z) -> (z, -y, x)
-        fun (x, y, z) -> (z, -x, -y)
-        fun (x, y, z) -> (z, y, -x)
+        fun struct (x, y, z) -> (z, x, y)
+        fun struct (x, y, z) -> (z, -y, x)
+        fun struct (x, y, z) -> (z, -x, -y)
+        fun struct (x, y, z) -> (z, y, -x)
 
         // facing -Z
-        fun (x, y, z) -> (-z, y, x)
-        fun (x, y, z) -> (-z, -x, y)
-        fun (x, y, z) -> (-z, -y, -x)
-        fun (x, y, z) -> (-z, x, -y)
+        fun struct (x, y, z) -> (-z, y, x)
+        fun struct (x, y, z) -> (-z, -x, y)
+        fun struct (x, y, z) -> (-z, -y, -x)
+        fun struct (x, y, z) -> (-z, x, -y)
     ]
 
-let tupleAdd (x0, y0, z0) (x1, y1, z1) = (x0 + x1, y0 + y1, z0 + z1)
-let tupleSub (x0, y0, z0) (x1, y1, z1) = (x0 - x1, y0 - y1, z0 - z1)
-let tupleMannhattan (x0, y0, z0) = abs x0 + abs y0 + abs z0
-
-let intersectCount left right =
-    let rec intersectCount' left right count =
-        match left, right with
-        | [], _ -> count
-        | _, [] -> count
-        | l::lt, r::rt ->
-            if l = r then
-                intersectCount' lt rt (count + 1)
-            else if l < r then
-                intersectCount' lt right count
-            else
-                intersectCount' left rt count
-
-    intersectCount' left right 0
+let vectorAdd ((x0, y0, z0) : Vector) ((x1, y1, z1) : Vector) = Vector (x0 + x1, y0 + y1, z0 + z1)
+let vectorSub ((x0, y0, z0) : Vector) ((x1, y1, z1) : Vector) = Vector (x0 - x1, y0 - y1, z0 - z1)
+let vectorMannhattan ((x0, y0, z0) : Vector) = abs x0 + abs y0 + abs z0
+let compare ((x0, y0, z0) : Vector) ((x1, y1, z1) : Vector) =
+    let cx = x0.CompareTo(x1)
+    if cx <> 0 then cx
+    else
+        let cy = y0.CompareTo(y1)
+        if cy <> 0 then cy
+        else z0.CompareTo(z1)
 
 let tryOrientScanner (_, scanner0, _) (s1i, scanner1) =
     allOrientations |> List.tryPick (fun orient ->
-        let scanner1Sorted = scanner1 |> List.map orient |> List.sort
+        let scanner1Sorted = scanner1 |> Seq.map orient |> Seq.sort |> Seq.toList
 
-        // both lists are now sorted, we try to brute-force match elements from the start
-        // since we need at least 12 matches, we can drop last 11 from each list from the search
+        // we try to brute-force match elements from the start since we need at least 12 matches, we
+        // can drop last 11 from each list from the search
         let probes0 = Seq.take (List.length scanner0 - 11) scanner0
-        let probes1 = Seq.take (List.length scanner1Sorted - 11) scanner1Sorted
+        let probes1 = Seq.take (List.length scanner1 - 11) scanner1Sorted
 
         Seq.allPairs probes0 probes1 |> Seq.tryPick (fun (b0, b1) ->
             // delta from scanner0 to scanner1
-            let delta = tupleSub b0 b1
+            let delta = vectorSub b0 b1
 
             // shift all beacons from scanner1 in direction of scanner0
-            let scanner1Shifted = scanner1Sorted |> List.map (fun b -> tupleAdd b delta)
+            let scanner1Shifted = scanner1Sorted |> List.map (fun b -> vectorAdd b delta)
 
-            if intersectCount scanner0 scanner1Shifted >= 12 then
+            // since both lists are sorted, we can use more efficient intersecting algorithm in O(n + m)
+            let rec intersectCount (left : Vector list) (right : Vector list) count =
+                match left, right with
+                | [], _ -> count
+                | _, [] -> count
+                | l::lt, r::rt ->
+                    match compare l r with
+                    | 0 -> intersectCount lt rt (count + 1)
+                    | x when x < 0 -> intersectCount lt right count
+                    | _ -> intersectCount left rt count
+
+            if intersectCount scanner0 scanner1Shifted 0 >= 12 then
                 Some (s1i, scanner1Shifted, delta)
             else
                 None
         )
     )
 
-let rec collectRemove picker list =
-    match list with
-    | [] -> [], []
-    | h::tail ->
-        let res, newTail = collectRemove picker tail
-        match picker h with
-        | Some r -> r::res, newTail
-        | None -> res, h::newTail
+let collectRemove picker list =
+    let rec collectRemove' picked notPicked picker = function
+        | [] -> picked, notPicked
+        | h::tail ->
+            match picker h with
+            | Some r -> collectRemove' (r::picked) notPicked picker tail
+            | None -> collectRemove' picked (h::notPicked) picker tail
+    collectRemove' [] [] picker list
 
 let orientAll (scanners : Scanner list) =
     let rec orientAll' (orientUsing : OrientedScanner list) (oriented : OrientedScanner list) (toOrient : Scanner list) =
@@ -119,7 +122,7 @@ let orientAll (scanners : Scanner list) =
             orientAll' (nextOrientUsing @ newlyOriented) (scanner::oriented) newToOrient
 
     let (s0, beacons0) = List.head scanners
-    orientAll' [(s0, beacons0, (0,0,0))] [] (List.tail scanners)
+    orientAll' [(s0, beacons0, Vector (0, 0, 0))] [] (List.tail scanners)
 
 let part1 (input : OrientedScanner list) =
     input |> List.map (fun (_, beacons, _) -> Set.ofList beacons)
@@ -128,7 +131,7 @@ let part1 (input : OrientedScanner list) =
 
 let part2 (input : OrientedScanner list) =
     List.allPairs input input
-    |> List.map (fun ((_, _, a), (_, _, b)) -> tupleSub a b |> tupleMannhattan)
+    |> List.map (fun ((_, _, a), (_, _, b)) -> vectorSub a b |> vectorMannhattan)
     |> List.max
 
 module Tests =
