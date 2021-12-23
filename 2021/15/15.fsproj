@@ -14,4 +14,8 @@
     <PackageReference Include="fsharpx.collections" Version="3.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.fsproj" />
+  </ItemGroup>
+
 </Project>
