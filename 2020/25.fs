@@ -1,4 +1,9 @@
-﻿module Program
+module AoC202025
+
+open AdventOfCode
+open FParsec
+
+let parser = pint64 .>> spaces .>>. pint64
 
 // computes a^b mod m using Horner's scheme in log b time
 let powmod a b m =
@@ -56,7 +61,4 @@ module Tests =
     let ``Break example encryption`` () =
          getEncryptionKey 5764801L 17807724L |> should equal 14897079L
 
-[<EntryPoint>]
-let main _ =
-    printfn "%A" (getEncryptionKey 8184785L 5293040L)
-    0
+let solution = makeSolution parser (fun i -> i ||> getEncryptionKey) (fun _ -> 0)

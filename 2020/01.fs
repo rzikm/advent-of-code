@@ -7,8 +7,7 @@ open Utils
 
 let parser = sepEndBy pint32 spaces
 
-let solve diff input =
-    let count = match diff with | Easy -> 2 | Hard -> 3
+let solve count input =
     subsets count input |> filter (List.sum >> (=) 2020) |> Seq.head |> List.reduce (*)
 
-let solution = makeSolution parser solve
+let solution = makeSolution parser (solve 2) (solve 3)

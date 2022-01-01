@@ -4,21 +4,20 @@ open System.IO
 open System
 open FParsec
 
-type Difficulty =
-    | Easy
-    | Hard
-
 type Solution = {
     parser : Parser<Object, unit>
-    solve : Difficulty -> Object -> Object
+    solve1 : Object -> Object
+    solve2 : Object -> Object
 }
 
 let makeSolution
     (parser : Parser<'input, unit>)
-    (solve : Difficulty -> 'input -> 'solution) =
+    (solve1 : 'input -> 'solution)
+    (solve2 : 'input -> 'solution) =
     {
         parser = parser |>> fun res -> upcast res
-        solve = fun diff input -> (solve diff (downcast input)) :> Object
+        solve1 = fun input -> (solve1 (downcast input)) :> Object
+        solve2 = fun input -> (solve2 (downcast input)) :> Object
     }
 
 let readStreamToString (stream : Stream) =
