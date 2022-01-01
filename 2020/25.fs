@@ -14,8 +14,10 @@ let powmod a b m =
     while exp > 0L do
         if exp % 2L > 0L then
             res <- (res * mult) % m
+
         mult <- (mult * mult) % m
         exp <- exp / 2L
+
     res
 
 // given an = a^n mod m; returns n
@@ -26,9 +28,11 @@ let discreteLog an a m =
 
     let mutable an = an
     let mutable e = 1L
+
     while an <> a do
         an <- (an * ainv) % m
         e <- e + 1L
+
     e
 
 let m = 20201227L
@@ -45,20 +49,22 @@ let getEncryptionKey cardPublic doorPublic =
 
     powmod 7L (c * d) m
 
+let solution =
+    makeSolution parser (fun i -> i ||> getEncryptionKey) (fun _ -> 0)
+
 module Tests =
     open FsUnit
     open Xunit
 
     [<Fact>]
     let ``Get card loop size`` () =
-        discreteLog 5764801L 7L m |> should equal 8
+        discreteLog 5764801L 7L m |> should equal 8L
 
     [<Fact>]
     let ``Get door loop size`` () =
-        discreteLog 17807724L 7L m |> should equal 11
+        discreteLog 17807724L 7L m |> should equal 11L
 
     [<Fact>]
     let ``Break example encryption`` () =
-         getEncryptionKey 5764801L 17807724L |> should equal 14897079L
-
-let solution = makeSolution parser (fun i -> i ||> getEncryptionKey) (fun _ -> 0)
+        getEncryptionKey 5764801L 17807724L
+        |> should equal 14897079L

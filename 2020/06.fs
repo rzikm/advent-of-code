@@ -4,9 +4,47 @@ open AdventOfCode
 open FSharpPlus
 open FParsec
 
-let parser = pint32
+let parser =
+    let nonwhite =
+        satisfy (System.Char.IsWhiteSpace >> not)
 
-let solve input =
-    0
+    let pline = many1 nonwhite |>> Set.ofList
+    let pgroup = sepEndBy1 pline (pchar '\n')
+    sepEndBy1 pgroup (pchar '\n')
 
-let solution = makeSolution parser solve solve
+let solve combiner input =
+    input
+    |> Seq.map (combiner >> Seq.length)
+    |> Seq.sum
+
+let solution =
+    makeSolution parser (solve Set.unionMany) (solve Set.intersectMany)
+
+module Tests =
+    open Xunit
+    open FsUnit.Xunit
+
+    let input =
+        [| "abc"
+           ""
+           "a"
+           "b"
+           "c"
+           ""
+           "ab"
+           "ac"
+           ""
+           "a"
+           "a"
+           "a"
+           "a"
+           ""
+           "b" |]
+
+    [<Fact>]
+    let ``Example part1`` () =
+        testPart1 solution input |> should equal 11
+
+    [<Fact>]
+    let ``Example part2`` () =
+        testPart2 solution input |> should equal 6
