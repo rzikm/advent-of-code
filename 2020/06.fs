@@ -42,9 +42,9 @@ module Tests =
            "b" |]
 
     [<Fact>]
-    let ``Example part1`` () =
+    let ``Example part 1`` () =
         testPart1 solution input |> should equal 11
 
     [<Fact>]
-    let ``Example part2`` () =
+    let ``Example part 2`` () =
         testPart2 solution input |> should equal 6

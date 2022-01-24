@@ -74,7 +74,7 @@ module Tests =
     open FsUnit.Xunit
 
     [<Fact>]
-    let ``Example part1`` () =
+    let ``Example part 1`` () =
         let input =
             [| "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd"
                "byr:1937 iyr:2017 cid:147 hgt:183cm"
@@ -110,7 +110,7 @@ module Tests =
         fieldValid (field, value) |> should equal expected
 
     [<Fact>]
-    let ``Example part2`` () =
+    let ``Example part 2`` () =
         let input =
             [| "eyr:1972 cid:100"
                "hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926"

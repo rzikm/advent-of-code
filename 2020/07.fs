@@ -8,8 +8,7 @@ open Utils
 let parser =
     let pspace = pchar ' '
 
-    let pword =
-        many1Satisfy (fun c -> System.Char.IsWhiteSpace c |> not)
+    let pword = many1Satisfy (fun c -> System.Char.IsWhiteSpace c |> not)
 
     let pcolor =
         pword .>> pspace .>>. pword
@@ -21,8 +20,7 @@ let parser =
         .>> pstring "bag"
         .>> optional (pchar 's')
 
-    let pcontainedBags =
-        sepBy1 (pint32 .>> pspace .>>. pbags) (pstring ", ")
+    let pcontainedBags = sepBy1 (pint32 .>> pspace .>>. pbags) (pstring ", ")
 
     let pcontainedNothing = pstring "no other bags" >>% []
 
