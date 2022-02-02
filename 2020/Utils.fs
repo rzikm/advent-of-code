@@ -15,6 +15,24 @@ module Array =
     let item2d x y array =
         array |> Array.item y |> Array.item x
 
+    let tryItem2d x y array =
+        array |> Array.tryItem y |> Option.bind (Array.tryItem x)
+
+    let neighbors2d8 x y array =
+        seq {
+            for xx in x-1 .. x+1 do
+                for yy in y-1 .. y+1 do
+                    if xx <> x || yy <> y then yield (xx, yy)
+        } |> Seq.choose (fun (x, y) -> tryItem2d x y array)
+
+let rec applyN (f : 'a -> 'a) (n : int) (v : 'a) =
+    match n with
+    | n when n < 1 -> failwith "Invalid application count"
+    | 1 -> f v
+    | _ -> applyN f (n-1) (f v)
+
+let (^) (f : 'a -> 'a) (n : int) (v : 'a) = applyN f n v
+
 let parseInt (baze : int) (str : string) =
     System.Convert.ToInt32(str, baze)
 
