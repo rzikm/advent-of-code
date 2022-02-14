@@ -2,38 +2,9 @@ module AoC202025
 
 open AdventOfCode
 open FParsec
+open Utils
 
 let parser = pint64 .>> spaces .>>. pint64
-
-// computes a^b mod m using Horner's scheme in log b time
-let powmod a b m =
-    let mutable res = 1L
-    let mutable mult = a
-    let mutable exp = b
-
-    while exp > 0L do
-        if exp % 2L > 0L then
-            res <- (res * mult) % m
-
-        mult <- (mult * mult) % m
-        exp <- exp / 2L
-
-    res
-
-// given an = a^n mod m; returns n
-let discreteLog an a m =
-    // from Fermat's small theorem
-    // a^-1 = a^(m-2) mod m
-    let ainv = powmod a (m - 2L) m
-
-    let mutable an = an
-    let mutable e = 1L
-
-    while an <> a do
-        an <- (an * ainv) % m
-        e <- e + 1L
-
-    e
 
 let m = 20201227L
 

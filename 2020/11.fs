@@ -21,7 +21,6 @@ let parser =
 
     sepEndBy line pnewline |>> Array.ofList
 
-
 let nextRound counter threshold (input: Cell [] []) =
     Array.init (Array.length input) (fun y ->
         Array.init (Array.length (Array.item y input)) (fun x ->
