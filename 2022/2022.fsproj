@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>_2022</RootNamespace>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../Common/AoC.fs" />
+    <Compile Include="../Common/Utils.fs" />
+    <Compile Include="01.fs" />
+    <!-- <Compile Include="02.fs" />
+    <Compile Include="03.fs" />
+    <Compile Include="04.fs" />
+    <Compile Include="05.fs" />
+    <Compile Include="06.fs" />
+    <Compile Include="07.fs" />
+    <Compile Include="08.fs" />
+    <Compile Include="09.fs" />
+    <Compile Include="10.fs" />
+    <Compile Include="11.fs" />
+    <Compile Include="12.fs" />
+    <Compile Include="13.fs" />
+    <Compile Include="14.fs" />
+    <Compile Include="15.fs" />
+    <Compile Include="16.fs" />
+    <Compile Include="17.fs" />
+    <Compile Include="18.fs" />
+    <Compile Include="19.fs" />
+    <Compile Include="20.fs" />
+    <Compile Include="21.fs" />
+    <Compile Include="22.fs" />
+    <Compile Include="23.fs" />
+    <Compile Include="24.fs" />
+    <Compile Include="25.fs" /> -->
+    <Compile Include="../Common/Runner.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FParsec" Version="1.1.1" />
+    <PackageReference Include="FSharpPlus" Version="1.2.5" />
+    <PackageReference Include="FsUnit" Version="4.1.0" />
+    <PackageReference Include="FsUnit.xUnit" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="3.0.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\2021\Utils\Utils.fsproj" />
+  </ItemGroup>
+
+</Project>
