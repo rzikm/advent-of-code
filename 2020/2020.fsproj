@@ -2,14 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>_2020</RootNamespace>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="AoC.fs" />
-    <Compile Include="Utils.fs" />
     <Compile Include="01.fs" />
     <Compile Include="02.fs" />
     <Compile Include="03.fs" />
@@ -35,12 +33,13 @@
     <Compile Include="23.fs" />
     <Compile Include="24.fs" />
     <Compile Include="25.fs" />
+    <Compile Include="../Common/Runner.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FParsec" Version="1.1.1" />
-    <PackageReference Include="FSharpPlus" Version="1.2.2" />
+    <PackageReference Include="FSharpPlus" Version="1.2.5" />
     <PackageReference Include="FsUnit" Version="4.1.0" />
     <PackageReference Include="FsUnit.xUnit" Version="4.1.0" />
   </ItemGroup>
@@ -60,6 +59,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\2021\Utils\Utils.fsproj" />
+    <ProjectReference Include="..\Common\Common.fsproj" />
   </ItemGroup>
 
 </Project>
