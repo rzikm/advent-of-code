@@ -1,13 +1,14 @@
 ﻿namespace Utils
 
-open System.Collections.Generic;
+open System.Collections.Generic
 
 module Graph =
     let graphAStar
-        (fHeuristic : 'vertex -> ^cost)
-        (fNeighbors : 'vertex -> ('vertex * ^cost) seq)
-        (start      : 'vertex)
-        (finish     : 'vertex) =
+        (fHeuristic: 'vertex -> ^cost)
+        (fNeighbors: 'vertex -> ('vertex * ^cost) seq)
+        (start: 'vertex)
+        (finish: 'vertex)
+        =
 
         let preds = Dictionary<'vertex, 'cost * 'vertex>()
         let fringe = PriorityQueue<'cost * 'vertex * 'vertex, 'cost>()
@@ -23,11 +24,11 @@ module Graph =
 
         let rec finalPath v tail =
             if v = start then
-                v::tail
+                v :: tail
             else
                 match preds.TryGetValue v with
-                | false, _ -> v::tail
-                | true, (_, x) -> finalPath x (v::tail)
+                | false, _ -> v :: tail
+                | true, (_, x) -> finalPath x (v :: tail)
 
         let rec doSearch () =
             let (vCost, v, from) = fringe.Dequeue()
@@ -41,5 +42,5 @@ module Graph =
                     addNeighbor v (n, vCost + nCost)
 
                 doSearch ()
-        doSearch ()
 
+        doSearch ()

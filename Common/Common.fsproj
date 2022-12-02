@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="AoC.fs" />
     <Compile Include="Utils.fs" />
+    <Compile Include="Graph.fs" />
   </ItemGroup>
 
   <ItemGroup>

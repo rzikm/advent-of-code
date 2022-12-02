@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "2021": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\source\\advent-of-code\\2021"
+    }
+  }
+}
