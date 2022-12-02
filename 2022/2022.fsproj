@@ -10,7 +10,7 @@
   <ItemGroup>
     <Compile Include="01.fs" />
     <Compile Include="02.fs" />
-    <!-- <Compile Include="03.fs" />
+    <Compile Include="03.fs" />
     <Compile Include="04.fs" />
     <Compile Include="05.fs" />
     <Compile Include="06.fs" />
@@ -32,7 +32,7 @@
     <Compile Include="22.fs" />
     <Compile Include="23.fs" />
     <Compile Include="24.fs" />
-    <Compile Include="25.fs" /> -->
+    <Compile Include="25.fs" />
     <Compile Include="../Common/Runner.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -58,7 +58,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\2021\Utils\Utils.fsproj" />
     <ProjectReference Include="..\Common\Common.fsproj" />
   </ItemGroup>
 

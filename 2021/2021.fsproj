@@ -58,7 +58,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\2021\Utils\Utils.fsproj" />
     <ProjectReference Include="..\Common\Common.fsproj" />
   </ItemGroup>
 
