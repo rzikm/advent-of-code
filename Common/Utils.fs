@@ -1,45 +1,87 @@
 module Utils
 
 open FSharpPlus
+open FParsec
 
-let rec subsets size list = seq {
-    if size = 0 then yield []
-    else
-        match list with
-        | [] -> yield! Seq.empty
-        | head::tail ->
-            for t in subsets (size - 1) tail do
-                yield head::t
-            yield! subsets size tail
-}
+let rec subsets size list =
+    seq {
+        if size = 0 then
+            yield []
+        else
+            match list with
+            | [] -> yield! Seq.empty
+            | head :: tail ->
+                for t in subsets (size - 1) tail do
+                    yield head :: t
+
+                yield! subsets size tail
+    }
 
 module Array =
-    let item2d x y array =
-        array |> Array.item y |> Array.item x
+    let item2d x y array = array |> Array.item y |> Array.item x
 
     let tryItem2d x y array =
         array |> Array.tryItem y |> Option.bind (Array.tryItem x)
 
     let neighbors2d8 x y array =
         seq {
-            for xx in x-1 .. x+1 do
-                for yy in y-1 .. y+1 do
-                    if xx <> x || yy <> y then yield (xx, yy)
-        } |> Seq.choose (fun (x, y) -> tryItem2d x y array)
+            for xx in x - 1 .. x + 1 do
+                for yy in y - 1 .. y + 1 do
+                    if xx <> x || yy <> y then
+                        yield (xx, yy)
+        }
+        |> Seq.choose (fun (x, y) -> tryItem2d x y array)
 
-let rec applyN (f : 'a -> 'a) (n : int) (v : 'a) =
+    let item3d x y z array =
+        array |> Array.item z |> Array.item y |> Array.item x
+
+    let tryItem3d x y z array =
+        array |> Array.tryItem z |> Option.bind (Array.tryItem y) |> Option.bind (Array.tryItem x)
+
+    let neighbors3d26 x y z array =
+        seq {
+            for zz in z - 1 .. z + 1 do
+                for yy in y - 1 .. y + 1 do
+                    for xx in x - 1 .. x + 1 do
+                        if xx <> x || yy <> y || zz <> z then
+                            yield (xx, yy, zz)
+        }
+        |> Seq.choose (fun (x, y, z) -> tryItem3d x y z array)
+
+    let item4d x y z w array =
+        array |> Array.item w |> Array.item z |> Array.item y |> Array.item x
+
+    let tryItem4d x y z w array =
+        array
+        |> Array.tryItem w
+        |> Option.bind (Array.tryItem z)
+        |> Option.bind (Array.tryItem y)
+        |> Option.bind (Array.tryItem x)
+
+    let neighbors4d x y z w array =
+        seq {
+            for ww in w - 1 .. w + 1 do
+                for zz in z - 1 .. z + 1 do
+                    for yy in y - 1 .. y + 1 do
+                        for xx in x - 1 .. x + 1 do
+                            if xx <> x || yy <> y || zz <> z || ww <> w then
+                                yield (xx, yy, zz, ww)
+        }
+        |> Seq.choose (fun (x, y, z, w) -> tryItem4d x y z w array)
+
+let rec applyN (f: 'a -> 'a) (n: int) (v: 'a) =
     match n with
     | n when n < 1 -> failwith "Invalid application count"
     | 1 -> f v
-    | _ -> applyN f (n-1) (f v)
+    | _ -> applyN f (n - 1) (f v)
 
-let (^) (f : 'a -> 'a) (n : int) (v : 'a) = applyN f n v
+let (^) (f: 'a -> 'a) (n: int) (v: 'a) = applyN f n v
 
-let parseInt (baze : int) (str : string) =
-    System.Convert.ToInt32(str, baze)
+let parseInt (baze: int) (str: string) = System.Convert.ToInt32(str, baze)
 
 let memoizerec f =
-    let cache = new System.Collections.Generic.Dictionary<_,_>()
+    let cache = new System.Collections.Generic.Dictionary<_, _>()
+
     let rec newf value =
         match cache.TryGetValue value with
         | true, res -> res
@@ -47,32 +89,34 @@ let memoizerec f =
             let res = f newf value
             cache.Add(value, res)
             res
+
     newf
 
 
-let primeFactors n = 
+let primeFactors n =
     seq {
         let mutable n = n
         let mutable p = 2L
+
         while n > 2L do
             while n % p = 0L do
                 yield p
                 n <- n / p
+
             p <- p + 1L
-    } |> Seq.countBy id |> Map.ofSeq
+    }
+    |> Seq.countBy id
+    |> Map.ofSeq
 
 
 let lcm nums =
-    let ipow n i = 
+    let ipow n i =
         let rec f n i acc =
-            if i = 0L then acc
-            else f n (i - 1L) (acc * n)
+            if i = 0L then acc else f n (i - 1L) (acc * n)
+
         f n i 1L
 
-    nums 
-    |> List.map primeFactors
-    |> List.reduce (Map.unionWith max)
-    |> Map.fold (fun s k v -> s * ipow k v) 1L
+    nums |> List.map primeFactors |> List.reduce (Map.unionWith max) |> Map.fold (fun s k v -> s * ipow k v) 1L
 
 
 // computes (a * b) mod m even for large integers
@@ -82,8 +126,8 @@ let multmod a b m =
     let (+) x y = Checked.(+) x y
     let (*) x y = Checked.(*) x y
 
-    let mutable res = 0L;
-    let mutable a = a % m;
+    let mutable res = 0L
+    let mutable a = a % m
     let mutable b = b % m
 
     while b > 0L do
@@ -115,8 +159,7 @@ let powmod a b m =
 
     res
 
-let negmod (a : int64) (m : int64) =
-    m - ((a % m) + m) % m
+let negmod (a: int64) (m: int64) = m - ((a % m) + m) % m
 
 let multinvmod a m =
     // from Fermat's small theorem
@@ -135,3 +178,9 @@ let discreteLog an a m =
         e <- e + 1L
 
     e
+
+
+let parseInput parser input =
+    match FParsec.CharParsers.run parser (String.concat "\n" input) with
+    | Success(res, _, _) -> res
+    | Failure(err, _, _) -> failwith err
