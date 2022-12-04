@@ -17,58 +17,6 @@ let rec subsets size list =
                 yield! subsets size tail
     }
 
-module Array =
-    let item2d x y array = array |> Array.item y |> Array.item x
-
-    let tryItem2d x y array =
-        array |> Array.tryItem y |> Option.bind (Array.tryItem x)
-
-    let neighbors2d8 x y array =
-        seq {
-            for xx in x - 1 .. x + 1 do
-                for yy in y - 1 .. y + 1 do
-                    if xx <> x || yy <> y then
-                        yield (xx, yy)
-        }
-        |> Seq.choose (fun (x, y) -> tryItem2d x y array)
-
-    let item3d x y z array =
-        array |> Array.item z |> Array.item y |> Array.item x
-
-    let tryItem3d x y z array =
-        array |> Array.tryItem z |> Option.bind (Array.tryItem y) |> Option.bind (Array.tryItem x)
-
-    let neighbors3d26 x y z array =
-        seq {
-            for zz in z - 1 .. z + 1 do
-                for yy in y - 1 .. y + 1 do
-                    for xx in x - 1 .. x + 1 do
-                        if xx <> x || yy <> y || zz <> z then
-                            yield (xx, yy, zz)
-        }
-        |> Seq.choose (fun (x, y, z) -> tryItem3d x y z array)
-
-    let item4d x y z w array =
-        array |> Array.item w |> Array.item z |> Array.item y |> Array.item x
-
-    let tryItem4d x y z w array =
-        array
-        |> Array.tryItem w
-        |> Option.bind (Array.tryItem z)
-        |> Option.bind (Array.tryItem y)
-        |> Option.bind (Array.tryItem x)
-
-    let neighbors4d x y z w array =
-        seq {
-            for ww in w - 1 .. w + 1 do
-                for zz in z - 1 .. z + 1 do
-                    for yy in y - 1 .. y + 1 do
-                        for xx in x - 1 .. x + 1 do
-                            if xx <> x || yy <> y || zz <> z || ww <> w then
-                                yield (xx, yy, zz, ww)
-        }
-        |> Seq.choose (fun (x, y, z, w) -> tryItem4d x y z w array)
-
 let rec applyN (f: 'a -> 'a) (n: int) (v: 'a) =
     match n with
     | n when n < 1 -> failwith "Invalid application count"
@@ -123,16 +71,15 @@ let lcm nums =
 // assumes 2 * m does not overflow
 let multmod a b m =
     // use checked operators to catch overflows
-    let (+) x y = Checked.(+) x y
-    let (*) x y = Checked.(*) x y
+    let (+) x y = Checked.op_Addition x y
+    let (*) x y = Checked.op_Multiply x y
 
     let mutable res = 0L
     let mutable a = a % m
     let mutable b = b % m
 
     while b > 0L do
-        if b % 2L > 0 then
-            res <- (res + a) % m
+        if b % 2L > 0 then res <- (res + a) % m
 
         a <- (a * 2L) % m
         b <- b / 2L
@@ -143,16 +90,15 @@ let multmod a b m =
 // assumes 2 * m does not overflow
 let powmod a b m =
     // use checked operators to catch overflows
-    let (+) x y = Checked.(+) x y
-    let (*) x y = Checked.(*) x y
+    let (+) x y = Checked.op_Addition x y
+    let (*) x y = Checked.op_Multiply x y
 
     let mutable res = 1L
     let mutable mult = a
     let mutable exp = b
 
     while exp > 0L do
-        if exp % 2L > 0L then
-            res <- (res * mult) % m
+        if exp % 2L > 0L then res <- (res * mult) % m
 
         mult <- multmod mult mult m
         exp <- exp / 2L
@@ -179,8 +125,18 @@ let discreteLog an a m =
 
     e
 
-
 let parseInput parser input =
     match FParsec.CharParsers.run parser (String.concat "\n" input) with
-    | Success(res, _, _) -> res
-    | Failure(err, _, _) -> failwith err
+    | Success (res, _, _) -> res
+    | Failure (err, _, _) -> failwith err
+
+let findMatching possibilities =
+    let rec find keys matching =
+        match keys with
+        | [] -> Some matching
+        | key :: keys ->
+            Map.find key possibilities
+            |> List.except (matching |> List.map snd)
+            |> List.tryPick (fun pos -> find keys ((key, pos) :: matching))
+
+    find (Map.keys possibilities |> List.ofSeq) []

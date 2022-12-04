@@ -44,11 +44,13 @@
             "type": "shell",
             "args": [
                 "test",
+                "--filter",
+                "AoC202021",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary",
             ],
             "options": {
-                "cwd": "${workspaceFolder}/2021",
+                "cwd": "${workspaceFolder}/2020",
                 "env": {
                     "VSTEST_HOST_DEBUG": "1"
                 }
