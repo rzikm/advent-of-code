@@ -11,14 +11,14 @@
             "processId": "${command:pickProcess}"
         },
         {
-            "name": "2020 (console)",
+            "name": "2022 (console)",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/2020/bin/Debug/net7.0/2020.dll",
+            "program": "${workspaceFolder}/2022/bin/Debug/net7.0/2022.dll",
             "args": [
-                "24"
+                "5"
             ],
-            "cwd": "${workspaceFolder}/2020",
+            "cwd": "${workspaceFolder}/2022",
             "stopAtEntry": false,
             "console": "internalConsole"
         }
