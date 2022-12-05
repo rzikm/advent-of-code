@@ -19,7 +19,8 @@ let rec subsets size list =
 
 let rec applyN (f: 'a -> 'a) (n: int) (v: 'a) =
     match n with
-    | n when n < 1 -> failwith "Invalid application count"
+    | n when n < 0 -> failwith "Invalid application count"
+    | 0 -> v
     | 1 -> f v
     | _ -> applyN f (n - 1) (f v)
 

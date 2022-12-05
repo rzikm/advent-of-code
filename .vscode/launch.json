@@ -10,5 +10,17 @@
             "request": "attach",
             "processId": "${command:pickProcess}"
         },
+        {
+            "name": "2020 (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/2020/bin/Debug/net7.0/2020.dll",
+            "args": [
+                "24"
+            ],
+            "cwd": "${workspaceFolder}/2020",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
     ]
 }
