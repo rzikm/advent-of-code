@@ -4,22 +4,22 @@ open AdventOfCode
 open FSharpPlus
 open FParsec
 
-let parser = pint32
+let parser = many1 (satisfy isLetter)
 
-let solve input = 0
+let findStart len input =
+    (input |> Seq.windowed len |> Seq.findIndex (Seq.distinct >> Seq.length >> (=) len)) + len
 
-let solution = makeSolution parser solve solve
+let solution = makeSolution parser (findStart 4) (findStart 14)
 
 module Tests =
     open Xunit
     open FsUnit.Xunit
 
-    let input = [| "" |]
-
-    [<Fact>]
-    let ``Example part 1`` () =
-        testPart1 solution input |> should equal 0
-
-// [<Fact>]
-// let ``Example part 2`` () =
-//     testPart2 solution input |> should equal 0
+    [<Theory>]
+    [<InlineData("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 7)>]
+    [<InlineData("bvwbjplbgvbhsrlpgdmjqwftvncz", 5)>]
+    [<InlineData("nppdvjthqldpwncqszvftbrmjlhg", 6)>]
+    [<InlineData("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 10)>]
+    [<InlineData("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 11)>]
+    let ``Example part 1`` input expected =
+        testPart1 solution [| input |] |> should equal expected
