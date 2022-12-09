@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Compile Include="AoC.fs" />
+    <Compile Include="Tuple.fs" />
     <Compile Include="List.fs" />
     <Compile Include="Array.fs" />
     <Compile Include="Utils.fs" />
