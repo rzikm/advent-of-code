@@ -19,18 +19,18 @@ let getNeighbors fCost (maxX, maxY) (x, y) =
     |> Seq.filter (fun (xx, yy) -> xx >= 0 && yy >= 0 && xx <= maxX && yy <= maxY)
     |> Seq.map (fun c -> (c, fCost c))
 
-let getCost (input: int[][]) (x, y) = input.[y].[x]
+let getCost (input: int [] []) (x, y) = input.[y].[x]
 
 let heuristic (maxX, maxY) (x, y) = abs (maxX - x) + abs (maxY - y)
 
-let solve1 (input: int[][]) =
+let solve1 (input: int [] []) =
     let finish = (input.[0].Length - 1, input.Length - 1)
     let fNeighbors = getNeighbors (getCost input) finish
     let fHeuristic = heuristic finish
 
-    Utils.Graph.graphAStar fHeuristic fNeighbors (0, 0) finish |> snd
+    Graph.graphAStar fHeuristic fNeighbors (0, 0) finish |> snd
 
-let solve2 (input: int[][]) =
+let solve2 (input: int [] []) =
     let finish = (input.[0].Length * 5 - 1, input.Length * 5 - 1)
 
     let getCost' (x, y) =
@@ -40,6 +40,6 @@ let solve2 (input: int[][]) =
     let fNeighbors = getNeighbors getCost' finish
     let fHeuristic = heuristic finish
 
-    Utils.Graph.graphAStar fHeuristic fNeighbors (0, 0) finish |> snd
+    Graph.graphAStar fHeuristic fNeighbors (0, 0) finish |> snd
 
 let solution = makeSolution parser solve1 solve2
