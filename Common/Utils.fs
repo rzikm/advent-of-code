@@ -47,7 +47,7 @@ let primeFactors n =
         let mutable n = n
         let mutable p = 2L
 
-        while n > 2L do
+        while n >= 2L do
             while n % p = 0L do
                 yield p
                 n <- n / p
@@ -56,7 +56,6 @@ let primeFactors n =
     }
     |> Seq.countBy id
     |> Map.ofSeq
-
 
 let lcm nums =
     let ipow n i =
@@ -141,3 +140,15 @@ let findMatching possibilities =
             |> List.tryPick (fun pos -> find keys ((key, pos) :: matching))
 
     find (Map.keys possibilities |> List.ofSeq) []
+
+
+module Tests =
+    open Xunit
+    open FsUnit.Xunit
+
+    [<Fact>]
+    let ``lcm on primes`` () =
+        let primes = List.map int64 [ 2; 7; 13 ]
+        let expected = List.reduce (*) primes
+
+        lcm primes |> should equal expected
