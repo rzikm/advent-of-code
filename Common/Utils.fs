@@ -141,6 +141,7 @@ let findMatching possibilities =
 
     find (Map.keys possibilities |> List.ofSeq) []
 
+let constf v _ = v
 
 module Tests =
     open Xunit

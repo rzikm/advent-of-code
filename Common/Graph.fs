@@ -2,11 +2,11 @@
 
 open System.Collections.Generic
 
-let graphAStar
+let aStar
     (fHeuristic: 'vertex -> ^cost)
     (fNeighbors: 'vertex -> ('vertex * ^cost) seq)
+    (fFinish: 'vertex -> bool)
     (start: 'vertex)
-    (finish: 'vertex)
     =
 
     let preds = Dictionary<'vertex, 'cost * 'vertex>()
@@ -34,7 +34,7 @@ let graphAStar
         // found shortest path to 'v' via 'from'
         preds.Item v <- (vCost, from)
 
-        if v = finish then
+        if fFinish v then
             (finalPath v [], vCost)
         else
             for (n, nCost) in fNeighbors v do
