@@ -1,6 +1,5 @@
 module AoC202123
 
-open Utils
 open AdventOfCode
 open FSharpPlus
 open FParsec
@@ -11,17 +10,16 @@ type Amphipod =
     | Copper
     | Desert
 
-type State = { hallway: Amphipod option[]; rooms: Amphipod list[] }
+type State = { hallway: Amphipod option []; rooms: Amphipod list [] }
 
 let parser =
     let pAmphipodType c t = pchar c >>. preturn t
 
     let pAmphipod =
-        choice
-            [ pAmphipodType 'A' Amber
-              pAmphipodType 'B' Bronze
-              pAmphipodType 'C' Copper
-              pAmphipodType 'D' Desert ]
+        choice [ pAmphipodType 'A' Amber
+                 pAmphipodType 'B' Bronze
+                 pAmphipodType 'C' Copper
+                 pAmphipodType 'D' Desert ]
 
     let pNewline = pchar '\n'
     let pTop = pstring "#############"
@@ -107,16 +105,15 @@ let getNeighbors roomSize (state: State) =
                 let verticalDist = roomSize - List.length otherAmphs
 
                 let candidates =
-                    Seq.concat
-                        [
-                          // left side
-                          seq { 0 .. (roomIdx + 1) }
-                          |> Seq.rev
-                          |> Seq.takeWhile (fun i -> Array.item i state.hallway |> Option.isNone)
+                    Seq.concat [
+                                 // left side
+                                 seq { 0 .. (roomIdx + 1) }
+                                 |> Seq.rev
+                                 |> Seq.takeWhile (fun i -> Array.item i state.hallway |> Option.isNone)
 
-                          // right side
-                          seq { (roomIdx + 2) .. 6 }
-                          |> Seq.takeWhile (fun i -> Array.item i state.hallway |> Option.isNone) ]
+                                 // right side
+                                 seq { (roomIdx + 2) .. 6 }
+                                 |> Seq.takeWhile (fun i -> Array.item i state.hallway |> Option.isNone) ]
 
                 for hallwaySpaceIndex in candidates do
                     let horizontalDist =
@@ -228,7 +225,7 @@ let solve1 input =
                List.replicate 2 Copper
                List.replicate 2 Desert |] }
 
-    Graph.graphAStar (fHeuristic 2) (getNeighbors 2) input finish |> snd
+    Graph.aStar (fHeuristic 2) (getNeighbors 2) ((=) finish) input |> snd
 
 let solve2 input =
     let finish =
@@ -247,7 +244,7 @@ let solve2 input =
                    List.insertManyAt 1 [ Bronze; Amber ] input.rooms.[2]
                    List.insertManyAt 1 [ Amber; Copper ] input.rooms.[3] |] }
 
-    Graph.graphAStar (fHeuristic 4) (getNeighbors 4) newStart finish |> snd
+    Graph.aStar (fHeuristic 4) (getNeighbors 4) ((=) finish) newStart |> snd
 
 let solution = makeSolution parser solve1 solve2
 
@@ -257,8 +254,8 @@ module Tests =
 
     let private parse input =
         match FParsec.CharParsers.run parser input with
-        | Success(res, _, _) -> res
-        | Failure(err, _, _) -> failwith err
+        | Success (res, _, _) -> res
+        | Failure (err, _, _) -> failwith err
 
     let input =
         [| "#############"

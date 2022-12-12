@@ -28,7 +28,7 @@ let solve1 (input: int [] []) =
     let fNeighbors = getNeighbors (getCost input) finish
     let fHeuristic = heuristic finish
 
-    Graph.graphAStar fHeuristic fNeighbors (0, 0) finish |> snd
+    Graph.aStar fHeuristic fNeighbors ((=) finish) (0, 0) |> snd
 
 let solve2 (input: int [] []) =
     let finish = (input.[0].Length * 5 - 1, input.Length * 5 - 1)
@@ -40,6 +40,6 @@ let solve2 (input: int [] []) =
     let fNeighbors = getNeighbors getCost' finish
     let fHeuristic = heuristic finish
 
-    Graph.graphAStar fHeuristic fNeighbors (0, 0) finish |> snd
+    Graph.aStar fHeuristic fNeighbors ((=) finish) (0, 0) |> snd
 
 let solution = makeSolution parser solve1 solve2
