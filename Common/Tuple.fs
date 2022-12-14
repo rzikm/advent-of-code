@@ -20,3 +20,5 @@ let inline gt t1 t2 = (>) <!> t1 <*> t2 |> uncurry (&&)
 let inline ge t1 t2 = (>=) <!> t1 <*> t2 |> uncurry (&&)
 
 let inline manhattanDist t1 t2 = sub t1 t2 |> map abs |> uncurry (+)
+
+let swap (a, b) = (b, a)

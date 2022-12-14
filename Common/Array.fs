@@ -52,6 +52,12 @@ let neighbors4d x y z w array =
 let init2d lenX lenY f =
     Array.init lenY (fun y -> Array.init lenX (fun x -> f x y))
 
+let map2d f array =
+    let leny = Array.length array
+    let lenx = Array.item 0 array |> Array.length
+
+    init2d lenx leny (fun x y -> f x y (item2d x y array))
+
 let rotate array =
     // Rotates 2d array clockwise
     let leny = Array.length array

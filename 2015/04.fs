@@ -4,11 +4,18 @@ open AdventOfCode
 open FSharpPlus
 open FParsec
 
-let parser = pint32
+let parser = restOfLine false
 
-let solve input = 0
+let md5 (str: string) =
+    let bytes = System.Text.Encoding.ASCII.GetBytes str
+    let hash = System.Security.Cryptography.MD5.HashData(bytes)
+    System.Convert.ToHexString(hash)
 
-let solution = makeSolution parser solve solve
+let solve zeros input =
+    let prefix = String.init zeros (Utils.constf "0")
+    Seq.initInfinite id |> Seq.find (fun n -> input + string n |> md5 |> String.startsWith prefix)
+
+let solution = makeSolution parser (solve 5) (solve 6)
 
 module Tests =
     open Xunit
@@ -16,10 +23,7 @@ module Tests =
 
     let input = [| "" |]
 
-    [<Fact>]
-    let ``Example part 1`` () =
-        testPart1 solution input |> should equal 0
-
-// [<Fact>]
-// let ``Example part 2`` () =
-//     testPart2 solution input |> should equal 0
+    [<Theory>]
+    [<InlineData("abcdef", 609043)>]
+    [<InlineData("pqrstuv", 1048970)>]
+    let ``Example part 1`` input expected = solve 5 input |> should equal expected

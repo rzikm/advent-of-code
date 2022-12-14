@@ -44,15 +44,13 @@ let private httpClient =
         raise (new Exception("Neither the input file or the session file does not exist"))
 
     let session = IO.File.ReadAllText sessionFile
+    let handler = new Net.Http.HttpClientHandler()
 
     let cookieContainer = new Net.CookieContainer()
     cookieContainer.SetCookies(new Uri("https://adventofcode.com"), session)
-    use handler = new Net.Http.HttpClientHandler()
-
     handler.CookieContainer <- cookieContainer
 
     new Net.Http.HttpClient(handler)
-
 
 let downloadInput year day =
 
