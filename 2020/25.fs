@@ -20,8 +20,7 @@ let getEncryptionKey cardPublic doorPublic =
 
     powmod 7L (c * d) m
 
-let solution =
-    makeSolution parser (fun i -> i ||> getEncryptionKey) (fun _ -> 0)
+let solution = makeSolution parser (fun i -> i ||> getEncryptionKey) (fun _ -> "*")
 
 module Tests =
     open FsUnit
@@ -37,5 +36,4 @@ module Tests =
 
     [<Fact>]
     let ``Break example encryption`` () =
-        getEncryptionKey 5764801L 17807724L
-        |> should equal 14897079L
+        getEncryptionKey 5764801L 17807724L |> should equal 14897079L

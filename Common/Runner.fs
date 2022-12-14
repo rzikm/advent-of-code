@@ -75,35 +75,40 @@ let runSolution year (day: int, solution: Solution) =
         use stream = System.IO.File.OpenRead filename
 
         let res =
-            match FParsec.CharParsers.runParserOnStream (solution.parser) () filename stream (System.Text.Encoding.UTF8)
+            match
+                runWithStopwatch
+                    (FParsec.CharParsers.runParserOnStream solution.parser () filename stream)
+                    System.Text.Encoding.UTF8
                 with
-            | FParsec.CharParsers.Success (input, _, _) -> Ok input
-            | FParsec.CharParsers.Failure (error, _, _) -> Error error
+            | FParsec.CharParsers.Success (input, _, _), time -> Ok(input, time)
+            | FParsec.CharParsers.Failure (error, _, _), _ -> Error error
 
         res
-        >>= (fun input ->
+        >>= (fun (input, time) ->
             let easy = runWithStopwatch solution.solve1 input
             let hard = runWithStopwatch solution.solve2 input
-            Ok(easy, hard))
+            Ok(time, easy, hard))
     with
     | ex -> Error(ex.Message)
 
 let run year args =
     let res =
-        args |> parseArgs |> Result.map (List.map (fun d -> d, getSolution $"AoC{year}" d >>= runSolution year))
+        args |> parseArgs |> Result.map (Seq.map (fun d -> d, getSolution $"AoC{year}" d >>= runSolution year))
 
     let print (day, result) =
-        printfn "Day %d:" day
 
         match result with
-        | Ok ((r1, t1), (r2, t2)) ->
+        | Ok (time, (r1, t1), (r2, t2)) ->
+            printfn "Day %d (parsed in %d ms):" day time
             printfn "   Part 1: %O (%d ms)" r1 t1
             printfn "   Part 2: %O (%d ms)" r2 t2
-        | Error err -> printfn "   %s" err
+        | Error err ->
+            printfn "Day %d" day
+            printfn "   %s" err
 
     match res with
     | Ok l ->
-        List.iter print l
+        Seq.iter print l
         0
     | Error s ->
         printfn "%s" s

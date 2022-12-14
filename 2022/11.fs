@@ -85,7 +85,7 @@ let solve rounds worry input =
     let doRound state =
         input |> List.map (fun m -> m.Id) |> List.fold doMonkey state
 
-    applyN doRound rounds (monkeys, inspectCount)
+    (doRound ^ rounds) (monkeys, inspectCount)
     |> snd
     |> Map.values
     |> Seq.sortDescending

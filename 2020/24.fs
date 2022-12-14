@@ -55,17 +55,14 @@ let solve2 iters input =
                 blackNeighbors = 0 || blackNeighbors > 2)
 
         let toAdd =
-            let whiteNeighbors =
-                blackTiles |> List.ofSeq |> List.map (neighbors6 >> Set.ofList) |> Set.unionMany
+            blackTiles
+            |> Seq.collect neighbors6
+            |> Seq.distinct
+            |> Seq.filter (not << flip Set.contains blackTiles)
+            |> Seq.filter (neighbors6 >> Seq.filter (flip Set.contains blackTiles) >> Seq.length >> (=) 2)
+            |> Set.ofSeq
 
-            Set.difference whiteNeighbors blackTiles
-            |> Set.filter (fun tile ->
-                let blackNeighbors =
-                    neighbors6 tile |> Set.ofList |> Set.intersect blackTiles |> Set.count
-
-                blackNeighbors = 2)
-
-        toRemove |> Set.difference blackTiles |> Set.union toAdd
+        Set.difference blackTiles toRemove |> Set.union toAdd
 
     let blackTiles =
         input
@@ -74,7 +71,7 @@ let solve2 iters input =
         |> List.map fst
         |> Set.ofList
 
-    applyN iter iters blackTiles |> Set.count
+    (iter ^ iters) blackTiles |> Set.count
 
 let solution = makeSolution parser solve1 (solve2 100)
 

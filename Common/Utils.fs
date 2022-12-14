@@ -17,14 +17,14 @@ let rec subsets size list =
                 yield! subsets size tail
     }
 
-let rec applyN (f: 'a -> 'a) (n: int) (v: 'a) =
+let rec applyN (n: int) (f: 'a -> 'a) (v: 'a) =
     match n with
     | n when n < 0 -> failwith "Invalid application count"
     | 0 -> v
     | 1 -> f v
-    | _ -> applyN f (n - 1) (f v)
+    | _ -> applyN (n - 1) f (f v)
 
-let (^) (f: 'a -> 'a) (n: int) (v: 'a) = applyN f n v
+let (^) (f: 'a -> 'a) (n: int) (v: 'a) = applyN n f v
 
 let parseInt (baze: int) (str: string) = System.Convert.ToInt32(str, baze)
 

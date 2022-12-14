@@ -6,7 +6,10 @@ open FSharpPlus
 open FParsec
 
 let parser =
-    let pcell = choice [ charReturn '.' false; charReturn '#' true ]
+    let pcell =
+        choice [ charReturn '.' false
+                 charReturn '#' true ]
+
     sepEndBy (many1 pcell |>> Array.ofList) (pchar '\n') |>> Array.ofList |>> Array.singleton
 
 let boolToInt =
@@ -56,10 +59,10 @@ let nextIteration4d input =
 
 
 let solve1 input =
-    applyN nextIteration3d 6 input |> Array.sumBy (Array.sumBy (Array.sumBy boolToInt))
+    (nextIteration3d ^ 6) input |> Array.sumBy (Array.sumBy (Array.sumBy boolToInt))
 
 let solve2 input =
-    applyN nextIteration4d 6 [| input |] |> Array.sumBy (Array.sumBy (Array.sumBy (Array.sumBy boolToInt)))
+    (nextIteration4d ^ 6) [| input |] |> Array.sumBy (Array.sumBy (Array.sumBy (Array.sumBy boolToInt)))
 
 let solution = makeSolution parser solve1 solve2
 

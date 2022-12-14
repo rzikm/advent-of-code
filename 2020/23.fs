@@ -46,17 +46,15 @@ let doMove (current, followers) =
 
 let solve1 iters input =
     let followers = initFollowers input
-    let res = applyN doMove iters (List.head input, followers) |> snd
+    let res = (doMove ^ iters) (List.head input, followers) |> snd
 
     [ 1..8 ] |> List.scan (fun c _ -> Array.item c res) 1 |> Seq.tail |> Seq.map (string) |> String.concat ""
-// [ 1..8 ] |> List.scan (fun c _ -> Map.find c res) 1 |> Seq.tail |> Seq.map (string) |> String.concat ""
 
 let solve2 input =
     let followers = initFollowers (input @ [ 10..1_000_000 ])
+    let res = (doMove ^ 10_000_000) (List.head input, followers) |> snd
 
-    let res = applyN doMove 10_000_000 (List.head input, followers) |> snd
     [ 1..2 ] |> List.scan (fun c _ -> Array.item c res) 1 |> List.map int64 |> List.reduce (*)
-// [ 1..2 ] |> List.scan (fun c _ -> Map.find c res) 1 |> List.map int64 |> List.reduce (*)
 
 let solution = makeSolution parser (solve1 100) solve2
 
