@@ -31,7 +31,10 @@ let entryName =
     | Directory (_, name) -> name
     | File (_, name) -> name
 
-let inline _entries f (Directory (es, name)) = f es <&> fun x -> Directory(x, name)
+let inline _entries f =
+    function
+    | Directory (es, name) -> f es <&> fun x -> Directory(x, name)
+    | _ -> failwith "Expected Directory"
 
 let constructTree commands =
     let evalCommand (cd, rootEntry) command =

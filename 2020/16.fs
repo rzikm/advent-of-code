@@ -51,13 +51,13 @@ let findMapping (fields, myTicket, otherTickets) =
                 |> List.sortBy fst
 
             match List.head counts with
-            | (0, _) -> None
-            | (_, field :: _) ->
+            | (c, field :: _) when c > 0 ->
                 values
                 |> List.filter (allValuesValid field)
                 |> List.tryPick (fun l ->
                     mixnmatch (List.except [ field ] fields) (List.except [ l ] values)
                     |> Option.map (fun matches -> (field, l) :: matches))
+            | _ -> None
 
     let fieldValues = List.transpose (otherTickets |> List.append [ myTicket ])
 
@@ -78,8 +78,8 @@ module Tests =
 
     let private parse input =
         match FParsec.CharParsers.run parser (String.concat "\n" input) with
-        | Success(res, _, _) -> res
-        | Failure(err, _, _) -> failwith err
+        | Success (res, _, _) -> res
+        | Failure (err, _, _) -> failwith err
 
 
     let input1 =
@@ -118,4 +118,8 @@ module Tests =
         parse input2
         |> findMapping
         |> Set.ofList
-        |> should equal (Set.ofList [ ("class", 12L); ("row", 11L); ("seat", 13L) ])
+        |> should
+            equal
+            (Set.ofList [ ("class", 12L)
+                          ("row", 11L)
+                          ("seat", 13L) ])

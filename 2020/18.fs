@@ -17,32 +17,39 @@ let parser =
     let ptoken, tokenR = createParserForwardedToRef ()
     let pparen = skipChar '(' >>. many1 ptoken .>> skipChar ')' |>> Parens
 
-    tokenR := choice [ pnumber; pplus; ptimes; pparen ]
+    tokenR
+    := choice [ pnumber
+                pplus
+                ptimes
+                pparen ]
 
     sepEndBy1 (many1 ptoken) (skipChar '\n')
 
+
+let evalSingle frec =
+    function
+    | Number n -> n
+    | Parens innerEx -> frec innerEx
+    | _ -> failwith "Expected Number or Parens"
+
 let rec evalExpr1 expr =
-    let evalSingle =
-        function
-        | Number n -> n
-        | Parens innerEx -> evalExpr1 innerEx
+    let evalSingle = evalSingle evalExpr1
 
     match expr with
     | [ single ] -> evalSingle single
     | l :: Plus :: r :: rest -> evalExpr1 (Number(evalSingle l + evalSingle r) :: rest)
     | l :: Times :: r :: rest -> evalExpr1 (Number(evalSingle l * evalSingle r) :: rest)
+    | _ -> failwith "Failed to evaluate"
 
 let rec evalExpr2 expr =
-    let evalSingle =
-        function
-        | Number n -> n
-        | Parens innerEx -> evalExpr2 innerEx
+    let evalSingle = evalSingle evalExpr2
 
     match expr with
     | [ single ] -> evalSingle single
     | l :: Plus :: r :: rest -> evalExpr2 (Number(evalSingle l + evalSingle r) :: rest)
     | l :: Times :: r :: Plus :: rr :: rest -> evalExpr2 (l :: Times :: Number(evalSingle r + evalSingle rr) :: rest)
     | l :: Times :: r :: rest -> evalExpr2 (Number(evalSingle l * evalSingle r) :: rest)
+    | _ -> failwith "Failed to evaluate"
 
 let solve eval input = input |> List.sumBy eval
 

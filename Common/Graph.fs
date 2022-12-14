@@ -2,15 +2,16 @@
 
 open System.Collections.Generic
 
-let aStar
+let inline aStar
     (fHeuristic: 'vertex -> ^cost)
     (fNeighbors: 'vertex -> ('vertex * ^cost) seq)
     (fFinish: 'vertex -> bool)
-    (start: 'vertex)
+    (startVertices: 'vertex list)
     =
 
     let preds = Dictionary<'vertex, 'cost * 'vertex>()
     let fringe = PriorityQueue<'cost * 'vertex * 'vertex, 'cost>()
+    let starts = Set.ofList startVertices
 
     let addNeighbor v (n, nCost) =
         match preds.TryGetValue n with
@@ -19,10 +20,10 @@ let aStar
             preds.Item n <- (nCost, v)
             fringe.Enqueue((nCost, n, v), (nCost + fHeuristic n))
 
-    fNeighbors start |> Seq.iter (addNeighbor start)
+    startVertices |> Seq.iter (fun v -> fNeighbors v |> Seq.distinct |> Seq.iter (addNeighbor v))
 
     let rec finalPath v tail =
-        if v = start then
+        if Set.contains v starts then
             v :: tail
         else
             match preds.TryGetValue v with
@@ -38,7 +39,8 @@ let aStar
             (finalPath v [], vCost)
         else
             for (n, nCost) in fNeighbors v do
-                addNeighbor v (n, vCost + nCost)
+                if not <| Set.contains n starts then
+                    addNeighbor v (n, vCost + nCost)
 
             doSearch ()
 

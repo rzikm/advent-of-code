@@ -37,7 +37,7 @@ let runWithStopwatch func arg =
     let elapsed = sw.ElapsedMilliseconds
     (res, elapsed)
 
-let downloadInput year day =
+let private httpClient =
     let sessionFile = "../session"
 
     if not <| IO.File.Exists sessionFile then
@@ -51,10 +51,13 @@ let downloadInput year day =
 
     handler.CookieContainer <- cookieContainer
 
-    use client = new Net.Http.HttpClient(handler)
+    new Net.Http.HttpClient(handler)
+
+
+let downloadInput year day =
 
     let bytes =
-        client
+        httpClient
             .GetByteArrayAsync(
                 $"https://adventofcode.com/{year}/day/{day}/input"
             )
@@ -62,12 +65,12 @@ let downloadInput year day =
 
     IO.File.WriteAllBytes($"in/{day:D2}.in", bytes)
 
-let runSolution (day: int, solution: Solution) =
+let runSolution year (day: int, solution: Solution) =
     let filename = $"in/{day:D2}.in"
 
     try
         if not <| IO.File.Exists filename then
-            downloadInput 2022 day
+            downloadInput year day
 
         use stream = System.IO.File.OpenRead filename
 
@@ -85,9 +88,9 @@ let runSolution (day: int, solution: Solution) =
     with
     | ex -> Error(ex.Message)
 
-let run classPrefix args =
+let run year args =
     let res =
-        args |> parseArgs |> Result.map (List.map (fun d -> d, getSolution classPrefix d >>= runSolution))
+        args |> parseArgs |> Result.map (List.map (fun d -> d, getSolution $"AoC{year}" d >>= runSolution year))
 
     let print (day, result) =
         printfn "Day %d:" day

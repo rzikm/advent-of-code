@@ -1,4 +1,4 @@
 ﻿module Program
 
 [<EntryPoint>]
-let main args = Runner.run "AoC2021" args
+let main args = Runner.run 2021 args

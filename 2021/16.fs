@@ -1,5 +1,7 @@
 module AoC202116
 
+#nowarn "40"
+
 open AdventOfCode
 open FSharpPlus
 open FParsec
@@ -33,8 +35,8 @@ let parser =
                 let! subInput = anyString len
 
                 match run (many pPacket) subInput with
-                | Success(res, _, _) -> return res
-                | Failure(err, _, _) -> return! fail err
+                | Success (res, _, _) -> return res
+                | Failure (err, _, _) -> return! fail err
             }
 
         let pFixedCount =
@@ -65,15 +67,15 @@ let parser =
 
         // Hack to restart parsing on binarized input
         match run pPacket bitInput with
-        | Success(res, _, _) -> preturn res
-        | Failure(err, _, _) -> failwith err)
+        | Success (res, _, _) -> preturn res
+        | Failure (err, _, _) -> failwith err)
 
-let rec foldPacket fLiteral fOperator (Packet(ver, content)) =
+let rec foldPacket fLiteral fOperator (Packet (ver, content)) =
     let recurse = foldPacket fLiteral fOperator
 
     match content with
     | Literal v -> fLiteral (ver, v)
-    | Operator(t, subp) -> fOperator (ver, t, subp |> List.map (recurse))
+    | Operator (t, subp) -> fOperator (ver, t, subp |> List.map (recurse))
 
 let sumPacketVersions =
     let fLiteral (version, _) = version
@@ -89,9 +91,17 @@ let evalPacket =
         | 1 -> List.reduce (*) args
         | 2 -> List.min args
         | 3 -> List.max args
-        | 5 -> let [ v1; v2 ] = args in if v1 > v2 then 1L else 0L
-        | 6 -> let [ v1; v2 ] = args in if v1 < v2 then 1L else 0L
-        | 7 -> let [ v1; v2 ] = args in if v1 = v2 then 1L else 0L
+        | 5
+        | 6
+        | 7 ->
+            match args with
+            | [ v1; v2 ] ->
+                match t with
+                | 5 -> if v1 > v2 then 1L else 0L
+                | 6 -> if v1 < v2 then 1L else 0L
+                | _ (* 7 *)  -> if v1 = v2 then 1L else 0L
+            | _ -> failwith "Expected exactly two arguments"
+        | _ -> failwith "Invalid type"
 
     foldPacket fLiteral fOperator
 

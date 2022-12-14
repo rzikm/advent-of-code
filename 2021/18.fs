@@ -24,7 +24,7 @@ module Num =
         let rec recurse sb num =
             match num with
             | Number x -> bprintf sb "%d" x
-            | Pair(l, r) -> bprintf sb "[%a,%a]" recurse l recurse r
+            | Pair (l, r) -> bprintf sb "[%a,%a]" recurse l recurse r
 
         let sb = StringBuilder()
         recurse sb num
@@ -34,35 +34,35 @@ module Num =
         let rec addLeft n num =
             match num with
             | Number i -> Number(n + i)
-            | Pair(l, r) -> Pair(addLeft n l, r)
+            | Pair (l, r) -> Pair(addLeft n l, r)
 
         let rec addRight n num =
             match num with
             | Number i -> Number(n + i)
-            | Pair(l, r) -> Pair(l, addRight n r)
+            | Pair (l, r) -> Pair(l, addRight n r)
 
         let rec explode depth num =
             match num with
             | Number _ -> None, num
-            | Pair(left, right) ->
+            | Pair (left, right) ->
                 if depth = 4 then
-                    let (Number l) = left
-                    let (Number r) = right
-                    Some(Some l, Some r), Number 0
+                    match left, right with
+                    | (Number l), (Number r) -> Some(Some l, Some r), Number 0
+                    | _ -> failwith "Expected only numbers in depth 4"
                 else
                     match explode (depth + 1) left with
-                    | Some(sl, Some r), num -> Some(sl, None), Pair(num, addLeft r right)
+                    | Some (sl, Some r), num -> Some(sl, None), Pair(num, addLeft r right)
                     | Some s, num -> Some s, Pair(num, right)
                     | None, _ ->
                         match explode (depth + 1) right with
-                        | Some(Some l, sr), num -> Some(None, sr), Pair(addRight l left, num)
+                        | Some (Some l, sr), num -> Some(None, sr), Pair(addRight l left, num)
                         | s, num -> s, Pair(left, num)
 
         let rec split num =
             match num with
             | Number n when n > 9 -> Some(Pair(Number(n / 2), Number(n - n / 2)))
             | Number _ -> None
-            | Pair(l, r) ->
+            | Pair (l, r) ->
                 split l
                 |> Option.map (fun nl -> Pair(nl, r))
                 |> Option.orElseWith (fun () -> split r |> Option.map (fun nr -> Pair(l, nr)))
@@ -83,7 +83,7 @@ module Num =
     let rec magnitude =
         function
         | Number n -> n
-        | Pair(l, r) -> (3 * magnitude l) + (2 * magnitude r)
+        | Pair (l, r) -> (3 * magnitude l) + (2 * magnitude r)
 
 let solve1 input =
     input |> Seq.reduce Num.add |> Num.magnitude
@@ -105,8 +105,8 @@ module Tests =
 
     let private parse input =
         match run parser input with
-        | Success(res, _, _) -> res |> List.head
-        | Failure(err, _, _) -> failwith err
+        | Success (res, _, _) -> res |> List.head
+        | Failure (err, _, _) -> failwith err
 
     [<Fact>]
     let ``Parse [[1,2],[[3,4],5]]`` () =

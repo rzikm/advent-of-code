@@ -43,7 +43,7 @@ let roomIndexToAmphipod =
     | 0 -> Amber
     | 1 -> Bronze
     | 2 -> Copper
-    | 3 -> Desert
+    | _ -> Desert
 
 let getTargetRoomIndex =
     function
@@ -225,7 +225,7 @@ let solve1 input =
                List.replicate 2 Copper
                List.replicate 2 Desert |] }
 
-    Graph.aStar (fHeuristic 2) (getNeighbors 2) ((=) finish) input |> snd
+    Graph.aStar (fHeuristic 2) (getNeighbors 2) ((=) finish) [ input ] |> snd
 
 let solve2 input =
     let finish =
@@ -244,7 +244,7 @@ let solve2 input =
                    List.insertManyAt 1 [ Bronze; Amber ] input.rooms.[2]
                    List.insertManyAt 1 [ Amber; Copper ] input.rooms.[3] |] }
 
-    Graph.aStar (fHeuristic 4) (getNeighbors 4) ((=) finish) newStart |> snd
+    Graph.aStar (fHeuristic 4) (getNeighbors 4) ((=) finish) [ newStart ] |> snd
 
 let solution = makeSolution parser solve1 solve2
 

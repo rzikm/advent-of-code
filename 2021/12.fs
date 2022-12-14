@@ -2,6 +2,7 @@ module AoC202112
 
 open AdventOfCode
 open FSharpPlus
+open FSharpPlus.Data
 open FParsec
 
 type Vertex =
@@ -45,38 +46,38 @@ let parse =
 
 let solve1 graph =
     let allPaths =
-        let rec allPaths' (v :: past) visited =
+        let rec allPaths' (v, past) visited =
             seq {
                 match v with
                 | End -> yield v :: past
                 | _ ->
                     for nextV in Set.difference (neighbors graph v) visited do
                         match nextV with
-                        | Large _ -> yield! allPaths' (nextV :: v :: past) visited
-                        | _ -> yield! allPaths' (nextV :: v :: past) (Set.add nextV visited)
+                        | Large _ -> yield! allPaths' (nextV, v :: past) visited
+                        | _ -> yield! allPaths' (nextV, v :: past) (Set.add nextV visited)
             }
 
-        allPaths' [ Start ] (Set.singleton Start) |> Seq.map List.rev
+        allPaths' (Start, []) (Set.singleton Start) |> Seq.map List.rev
 
     allPaths |> Seq.length
 
 let solve2 graph =
     let allPaths =
-        let rec allPaths' (v :: past) visited singleDouble =
+        let rec allPaths' (v, past) visited singleDouble =
             seq {
                 match v with
                 | End -> yield v :: past
                 | _ ->
                     for nextV in Set.difference (neighbors graph v) visited do
                         match nextV, singleDouble with
-                        | Large _, _ -> yield! allPaths' (nextV :: v :: past) visited singleDouble
+                        | Large _, _ -> yield! allPaths' (nextV, v :: past) visited singleDouble
                         | Small _, None ->
-                            yield! allPaths' (nextV :: v :: past) visited (Some nextV)
-                            yield! allPaths' (nextV :: v :: past) (Set.add nextV visited) singleDouble
-                        | _ -> yield! allPaths' (nextV :: v :: past) (Set.add nextV visited) singleDouble
+                            yield! allPaths' (nextV, v :: past) visited (Some nextV)
+                            yield! allPaths' (nextV, v :: past) (Set.add nextV visited) singleDouble
+                        | _ -> yield! allPaths' (nextV, v :: past) (Set.add nextV visited) singleDouble
             }
 
-        allPaths' [ Start ] (Set.singleton Start) None |> Seq.distinct |> Seq.map List.rev
+        allPaths' (Start, []) (Set.singleton Start) None |> Seq.distinct |> Seq.map List.rev
 
     allPaths |> Seq.length
 
@@ -88,10 +89,58 @@ module Tests =
 
     let input = [| "start-A"; "start-b"; "A-c"; "A-b"; "b-d"; "A-end"; "b-end" |]
 
+    let input2 =
+        [| "dc-end"
+           "HN-start"
+           "start-kj"
+           "dc-start"
+           "dc-HN"
+           "LN-dc"
+           "HN-end"
+           "kj-sa"
+           "kj-HN"
+           "kj-dc" |]
+
+    let input3 =
+        [| "fs-end"
+           "he-DX"
+           "fs-he"
+           "start-DX"
+           "pj-DX"
+           "end-zg"
+           "zg-sl"
+           "zg-pj"
+           "pj-he"
+           "RW-he"
+           "fs-DX"
+           "pj-RW"
+           "zg-RW"
+           "start-pj"
+           "he-WI"
+           "zg-he"
+           "pj-fs"
+           "start-RW" |]
+
     [<Fact>]
-    let ``Example part 1`` () =
+    let ``Example part 1 - small`` () =
         testPart1 solution input |> should equal 10
 
     [<Fact>]
-    let ``Example part 2`` () =
-        testPart2 solution input |> should equal 103
+    let ``Example part 1 - medium`` () =
+        testPart1 solution input2 |> should equal 19
+
+    [<Fact>]
+    let ``Example part 1 - large`` () =
+        testPart1 solution input3 |> should equal 226
+
+    [<Fact>]
+    let ``Example part 2 - small`` () =
+        testPart2 solution input |> should equal 36
+
+    [<Fact>]
+    let ``Example part 2 - medium`` () =
+        testPart2 solution input2 |> should equal 103
+
+    [<Fact>]
+    let ``Example part 2 - large`` () =
+        testPart2 solution input3 |> should equal 3509
