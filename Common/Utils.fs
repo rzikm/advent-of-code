@@ -141,6 +141,29 @@ let findMatching possibilities =
 
     find (Map.keys possibilities |> List.ofSeq) []
 
+let unionIntervals intervals =
+    let rec unionIntervals' acc intervals =
+        match intervals with
+        | [] -> acc
+        | [ i ] -> i :: acc
+
+        | (s1, e1) :: (s2, e2) :: rest ->
+            // due to sort we know that s1 <= s2
+            if s1 = s2 then
+                // sorting implies e1 <= e2 -> 2 is superset
+                unionIntervals' acc ((s2, e2) :: rest)
+            else if e1 < s2 then
+                // disjoint
+                unionIntervals' ((s1, e1) :: acc) ((s2, e2) :: rest)
+            else if e2 <= e1 then
+                // 2 is subset of 1
+                unionIntervals' acc ((s1, e1) :: rest)
+            else
+                // partial overlap, union this range
+                unionIntervals' acc ((s1, e2) :: rest)
+
+    intervals |> List.sort |> unionIntervals' [] |> List.rev
+
 let constf v _ = v
 
 module Tests =
