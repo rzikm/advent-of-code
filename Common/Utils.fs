@@ -17,6 +17,30 @@ let rec subsets size list =
                 yield! subsets size tail
     }
 
+let rec allSubsets list =
+    seq {
+        match list with
+        | [] -> yield []
+        | a :: rest ->
+            let others = allSubsets rest
+            yield! others
+            yield! others |> Seq.map (fun l -> a::l)
+    }
+
+let rec permutations list =
+    seq {
+        match list with
+        | [] -> yield []
+        | a :: rest ->
+            yield!
+                permutations rest
+                |> Seq.collect (fun l ->
+                    { 0 .. List.length l }
+                    |> Seq.map (fun i ->
+                        let l, r = List.splitAt i l
+                        List.concat [ l; [ a ]; r ]))
+    }
+
 let rec applyN (n: int) (f: 'a -> 'a) (v: 'a) =
     match n with
     | n when n < 0 -> failwith "Invalid application count"

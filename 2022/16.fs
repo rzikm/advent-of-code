@@ -38,53 +38,47 @@ let compressGraph start input =
         v, (rate, neighbors))
     |> Map.ofList
 
-let solve timeLimit count input =
-    let compressed = compressGraph "AA" input
+let solve timeLimit partitions input =
+    let compressed =
+        compressGraph "AA" input |> Map.map (fun _ (rate, ns) -> (rate, Map.ofList ns))
 
-    let rec search (time, rate, released, poss, opened) =
-        if time = timeLimit then
-            (time, rate, released, poss, opened)
-        else
-            match List.tryFindIndex (snd >> (=) 0) poss with
-            | None ->
-                // everybody is traveling/working, fast forward by the lowest time
-                let (n, dt) = poss |> List.minBy snd
-                search (time + dt, rate, released + dt * rate, (over (List.traverse << _2) (flip (-) dt) poss), opened)
+    let valves = Map.keys compressed |> Seq.sort |> List.ofSeq |> List.tail
 
-            | Some i ->
-                let current = poss |> List.item i |> fst
-                // somebody reached a valve and opened it
-                let (valveRate, neighbors) = Map.find current compressed
-                let rate = valveRate + rate
+    // maximum pressure released after 'timeleft' starting from 'current' and possibility of opening 'valves' valves
+    let maxRateBy =
+        Utils.memoizerec (fun frec (timeLeft, current, valves) ->
+            let (rate, ns) = Map.find current compressed
 
-                // state if he waits until the end of time limit
-                let ifWaited =
-                    [ search (time, rate, released, setl (List._item i << _Some) ("AA", timeLimit - time) poss, opened) ]
+            match Set.count valves with
+            | 0 ->
+                // no valves to open, count just the current valve
+                ([ current ], rate * timeLeft)
+            | _ ->
+                valves
+                |> Set.toSeq
+                |> Seq.choose (fun next ->
+                    // move to next and open it
+                    let dist = Map.find next ns + 1
 
-                // state if he moves to open some valve
-                let ifMoved =
-                    neighbors
-                    |> List.choose (fun (n, dist) ->
-                        // travel + one minute to fully open the valve
-                        if time + dist + 1 < timeLimit && not <| List.contains n opened then
-                            Some(
-                                search (
-                                    time,
-                                    rate,
-                                    released,
-                                    setl (List._item i << _Some) (n, dist + 1) poss,
-                                    n :: opened
-                                )
-                            )
-                        else
-                            None)
+                    if dist < timeLeft then
+                        let (path, flowAfterNext) = frec (timeLeft - dist, next, Set.remove next valves)
+                        Some(current :: path, flowAfterNext + rate * timeLeft)
+                    else
+                        None)
+                |> Seq.append [ ([ current ], rate * timeLeft) ]
+                |> Seq.maxBy snd)
 
-                List.concat [ ifWaited; ifMoved ] |> List.maxBy (fun (_, _, r, _, _) -> r)
+    partitions valves
+    |> Seq.map (fun santaValves ->
+        let elephantValves = List.except santaValves valves
 
-    let (_, _, released, _, _) = search (0, 0, 0, List.replicate count ("AA", 0), [])
-    released
+        (santaValves, elephantValves)
+        |> Tuple2.map (fun vs -> (maxRateBy (timeLimit, "AA", Set.ofList vs)))
+        |> fun ((_, lr), (_, rr)) -> lr + rr)
+    |> Seq.max
 
-let solution = makeSolution parser (solve 30 1) (solve 26 2)
+let solution =
+    makeSolution parser (solve 30 Seq.singleton) (solve 26 Utils.allSubsets) //(solveAlt 26 2)
 
 module Tests =
     open Xunit
