@@ -31,18 +31,20 @@ let inline aStar
             | true, (_, x) -> finalPath x (v :: tail)
 
     let rec doSearch () =
-        let (vCost, v, from) = fringe.Dequeue()
-        // found shortest path to 'v' via 'from'
-        preds.Item v <- (vCost, from)
+        match fringe.TryDequeue () with
+        | true, (vCost, v, from), _ ->
+            // found shortest path to 'v' via 'from'
+            preds.Item v <- (vCost, from)
 
-        if fFinish v then
-            (finalPath v [], vCost)
-        else
-            for (n, nCost) in fNeighbors v do
-                if not <| Set.contains n starts then
-                    addNeighbor v (n, vCost + nCost)
+            if fFinish v then
+                Some (finalPath v [], vCost)
+            else
+                for (n, nCost) in fNeighbors v do
+                    if not <| Set.contains n starts then
+                        addNeighbor v (n, vCost + nCost)
 
-            doSearch ()
+                doSearch ()
+        | _ -> None
 
     doSearch ()
 
@@ -92,3 +94,33 @@ let shortestPaths
                 doSearch ends acc
 
     doSearch ends []
+
+let connectedComponent
+    (fNeighbors: 'vertex -> ('vertex) seq)
+    (start: 'vertex )
+    =
+    let visited = HashSet<'vertex>()
+    let fringe = Queue<'vertex>()
+
+    let addNeighbor v n =
+        if not <| visited.Contains n then
+            fringe.Enqueue(n)
+
+    visited.Add(start) |> ignore
+    fNeighbors start |> Seq.iter (addNeighbor start)
+
+    let rec doSearch () =
+        match fringe.TryDequeue () with
+        | true, v ->
+            let v = fringe.Dequeue()
+
+            visited.Add(v) |> ignore
+
+            for n in fNeighbors v do
+                addNeighbor v n
+
+            doSearch()
+        | false, _->
+            Seq.toList visited
+
+    doSearch ()

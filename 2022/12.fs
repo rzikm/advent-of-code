@@ -28,7 +28,9 @@ let solve toChar input =
                 else
                     None))
 
-    Graph.aStar (Utils.constf 0) neighbors (fun v -> uncurry Array.item2d v input = toChar) [ start ] |> snd
+    Graph.aStar (Utils.constf 0) neighbors (fun v -> uncurry Array.item2d v input = toChar) [ start ]
+    |> Option.get
+    |> snd
 
 let solution = makeSolution parser (solve 'S') (solve 'a')
 
