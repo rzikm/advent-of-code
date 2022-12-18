@@ -103,18 +103,15 @@ let connectedComponent
     let fringe = Queue<'vertex>()
 
     let addNeighbor v n =
-        if not <| visited.Contains n then
+        if visited.Add(n) then
             fringe.Enqueue(n)
 
     visited.Add(start) |> ignore
-    fNeighbors start |> Seq.iter (addNeighbor start)
+    fringe.Enqueue(start)
 
     let rec doSearch () =
         match fringe.TryDequeue () with
         | true, v ->
-            let v = fringe.Dequeue()
-
-            visited.Add(v) |> ignore
 
             for n in fNeighbors v do
                 addNeighbor v n

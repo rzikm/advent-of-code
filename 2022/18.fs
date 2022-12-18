@@ -27,31 +27,23 @@ let solve1 input =
 
 let solve2 input =
     let allCubes = Set.ofList input
-    let first = List.head input
 
-    let (x0, y0, z0), (x1, y1, z1) =
-        allCubes
-        |> fold
-            (fun ((x0, y0, z0), (x1, y1, z1)) (x, y, z) ->
-                (min x0 x, min y0 y, min z0 z), (max x1 x, max y1 y, max z1 z))
-            (first, first)
+    let neighborspp =
+        let ns =
+            allCubes |> Seq.collect neighbors |> Set.ofSeq |> flip Set.difference allCubes
 
-    let fNeighbors =
-        neighbors
-        >> Seq.choose (fun (x, y, z) ->
-            if Set.contains (x, y, z) allCubes then
-                None
-            else if x0 - 1 <= x && x <= x1 + 1 && y0 - 1 <= y && y <= y1 + 1 && z0 - 1 <= z && z <= z1 + 1 then
-                Some((x, y, z), 1)
-            else
-                None)
+        let nss = ns |> Seq.collect neighbors |> Set.ofSeq |> flip Set.difference allCubes
+        Set.union ns nss
 
-    let fHeuristic = dist (0, 0, 0)
+    let fNeighbors = neighbors >> Seq.filter (flip Set.contains neighborspp)
+
+    let start = neighborspp |> Seq.maxBy (fun (x, _, _) -> x)
+    let connected = Graph.connectedComponent fNeighbors start |> Set.ofList
 
     input
     |> Seq.ofList
     |> Seq.collect (neighbors >> Seq.filter (flip Set.contains allCubes >> not))
-    |> Seq.choose (fun p -> Graph.aStar fHeuristic fNeighbors ((=) (0, 0, 0)) [ p ])
+    |> Seq.filter (flip Set.contains connected)
     |> Seq.length
 
 let solution = makeSolution parser solve1 solve2
