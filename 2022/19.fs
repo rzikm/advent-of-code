@@ -46,10 +46,10 @@ let simulateBlueprint time blueprint =
         |> Array.fold
             (fun s recipe ->
                 recipe |> List.fold (fun s (count, ore) -> Array.mapAt (mineralToIndex ore) (max count) s) s)
-            [| 0; 0; 0 |]
+            [| 0; 0; 0; time * time |]
 
-    let rec simulateStep (timeLeft, resources, robots) =
-        let ifWaited = Array.last robots * timeLeft + Array.last resources
+    let rec simulateStep currentMax (timeLeft, resources, robots) =
+        let ifWaited = Array.last robots * timeLeft + Array.last resources |> max currentMax
 
         //
         // recursively wait until we gather enough resources for creating each type of robot
@@ -57,9 +57,23 @@ let simulateBlueprint time blueprint =
 
         blueprint
         |> Seq.indexed
-        |> Seq.choose (fun (i, recipe) ->
-            // check if we even mine the ingredients
-            if recipe |> List.forall (fun (_, ore) -> Array.item (mineralToIndex ore) robots > 0) then
+        |> Seq.rev // start with geoid-mining robot
+        // check if we even mine the ingredients
+        |> Seq.filter (snd >> List.forall (fun (_, ore) -> Array.item (mineralToIndex ore) robots > 0))
+        // can we spend the additional mineral?
+        |> Seq.filter (fun (i, _) ->
+            let c = Array.item i maxCosts
+            let r = Array.item i robots
+            let res = Array.item i resources
+
+            res + timeLeft * r < timeLeft * c)
+        |> Seq.fold
+            (fun currentMax (i, recipe) ->
+                // can we surpass current maximum?
+                let maxEstimate =
+                    let r = Array.last robots
+                    let c = Array.last resources
+                    c + timeLeft * (r + timeLeft + r) / 2
 
                 // how long until we have the resources
                 let waitTime =
@@ -75,18 +89,8 @@ let simulateBlueprint time blueprint =
                             toMine / miners + sign (toMine % miners))
                     |> List.max
 
-                // can we spend the additional mineral?
-                let canSpendIt =
-                    Array.tryItem i maxCosts
-                    |> Option.map (fun c ->
-                        let r = Array.item i robots
-                        let res = Array.item i resources
-
-                        res + timeLeft * r < timeLeft * c)
-                    |> Option.defaultValue true
-
-                if waitTime >= timeLeft - 1 || not <| canSpendIt then
-                    None
+                if waitTime >= timeLeft - 1 || maxEstimate < currentMax then
+                    currentMax
                 else
                     let afterWait = Array.map2 (fun c r -> c + r * (waitTime + 1)) resources robots
 
@@ -96,13 +100,10 @@ let simulateBlueprint time blueprint =
                             (fun ress (count, ore) -> Array.mapAt (mineralToIndex ore) (flip (-) count) ress)
                             afterWait
 
-                    (timeLeft - waitTime - 1, afterBuild, Array.mapAt i ((+) 1) robots) |> simulateStep |> Some
-            else
-                None)
-        |> flip Seq.append [ ifWaited ]
-        |> Seq.max
+                    simulateStep currentMax (timeLeft - waitTime - 1, afterBuild, Array.mapAt i ((+) 1) robots))
+            ifWaited
 
-    simulateStep (time, [| 0; 0; 0; 0 |], [| 1; 0; 0; 0 |])
+    simulateStep 0 (time, [| 0; 0; 0; 0 |], [| 1; 0; 0; 0 |])
 
 let solve1 input =
     List.sumBy (fun (i, blueprint) -> i * simulateBlueprint 24 (blueprint)) input
