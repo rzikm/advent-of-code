@@ -2,6 +2,9 @@ module Array
 
 open FSharpPlus
 
+let mapAt i f array =
+    Array.updateAt i (Array.item i array |> f) array
+
 let item2d x y array = array |> Array.item y |> Array.item x
 
 let tryItem2d x y array =
