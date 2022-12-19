@@ -1,17 +1,14 @@
 module Array
 
+open FSharpPlus
+
 let item2d x y array = array |> Array.item y |> Array.item x
 
 let tryItem2d x y array =
     array |> Array.tryItem y |> Option.bind (Array.tryItem x)
 
 let neighbors2d8 x y array =
-    seq {
-        for xx in x - 1 .. x + 1 do
-            for yy in y - 1 .. y + 1 do
-                if xx <> x || yy <> y then yield (xx, yy)
-    }
-    |> Seq.choose (fun (x, y) -> tryItem2d x y array)
+    Tuple2.neighbors8 (x, y) |> Seq.choose (fun (x, y) -> tryItem2d x y array)
 
 let item3d x y z array =
     array |> Array.item z |> Array.item y |> Array.item x
@@ -20,13 +17,7 @@ let tryItem3d x y z array =
     array |> Array.tryItem z |> Option.bind (Array.tryItem y) |> Option.bind (Array.tryItem x)
 
 let neighbors3d26 x y z array =
-    seq {
-        for zz in z - 1 .. z + 1 do
-            for yy in y - 1 .. y + 1 do
-                for xx in x - 1 .. x + 1 do
-                    if xx <> x || yy <> y || zz <> z then yield (xx, yy, zz)
-    }
-    |> Seq.choose (fun (x, y, z) -> tryItem3d x y z array)
+    Tuple3.neighbors26 (x, y, z) |> Seq.choose (fun (x, y, z) -> tryItem3d x y z array)
 
 let item4d x y z w array =
     array |> Array.item w |> Array.item z |> Array.item y |> Array.item x

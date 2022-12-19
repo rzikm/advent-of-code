@@ -55,12 +55,7 @@ let easy input = run input easyCounter 4
 
 let hard input =
     let counter x y array =
-        let deltas = [(-1, -1); (-1, 0); (-1, 1); (0, -1); (0, 1); (1, -1); (1, 0); (1, 1)]
-        let rec picker x y (dx, dy) array =
-            match Array.tryItem2d (x + dx) (y + dy) array with
-            | Some Empty -> picker (x + dx) (y + dy) (dx, dy) array
-            | other -> other
-        deltas |> Seq.choose (fun d -> picker x y d array) |> Seq.filter ((=) Occupied) |> Seq.length
+        Tuple2.neighbors8 (x, y) |> Seq.choose (fun (xx, yy) -> Array.tryItem2d xx yy array) |> Seq.filter ((=) Occupied) |> Seq.length
 
     run input counter 5
 

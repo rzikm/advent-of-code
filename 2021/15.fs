@@ -10,12 +10,7 @@ let parser =
     sepEndBy pLine spaces |>> Array.ofSeq
 
 let getNeighbors fCost (maxX, maxY) (x, y) =
-    seq {
-        (x - 1, y)
-        (x + 1, y)
-        (x, y - 1)
-        (x, y + 1)
-    }
+    Tuple2.neighbors4 (x, y)
     |> Seq.filter (fun (xx, yy) -> xx >= 0 && yy >= 0 && xx <= maxX && yy <= maxY)
     |> Seq.map (fun c -> (c, fCost c))
 

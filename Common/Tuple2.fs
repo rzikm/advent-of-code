@@ -22,3 +22,18 @@ let inline ge t1 t2 = (>=) <!> t1 <*> t2 |> uncurry (&&)
 let inline manhattanDist t1 t2 = sub t1 t2 |> map abs |> uncurry (+)
 
 let swap (a, b) = (b, a)
+
+let neighbors4 (x, y) =
+    seq {
+        (x - 1, y)
+        (x + 1, y)
+        (x, y - 1)
+        (x, y + 1)
+    }
+
+let neighbors8 (x, y) =
+    seq {
+        for xx in x - 1 .. x + 1 do
+            for yy in y - 1 .. y + 1 do
+                if xx <> x || yy <> y then yield (xx, yy)
+    }

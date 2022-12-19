@@ -14,9 +14,7 @@ let solve toChar input =
         |> Array.pick (fun (y, row) -> Array.tryFindIndex ((=) 'E') row |> Option.map (fun x -> (x, y)))
 
     let neighbors v =
-        [ (0, 1); (0, -1); (1, 0); (-1, 0) ]
-        |> List.toSeq
-        |> Seq.map (Tuple2.add v)
+        Tuple2.neighbors4 v
         |> Seq.choose (fun n ->
             let vc = uncurry Array.item2d v input
 
