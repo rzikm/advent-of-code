@@ -1,25 +1,30 @@
 module AoC201510
 
+open Utils
 open AdventOfCode
 open FSharpPlus
 open FParsec
 
-let parser = pint32
+let parser = many1Chars (satisfy isDigit)
 
-let solve input = 0
+let solve n input =
+    let step input =
+        let rec convert (acc: System.Text.StringBuilder) (input: char list) =
+            match input with
+            | [] -> acc.ToString()
+            | a :: _ ->
+                let count = Seq.takeWhile ((=) a) input |> Seq.length
+                acc.Append count |> ignore
+                acc.Append a |> ignore
 
-let solution = makeSolution parser solve solve
+                let rest = input |> List.skip count
 
-module Tests =
-    open Xunit
-    open FsUnit.Xunit
+                convert acc rest
 
-    let input = [| "" |]
+        let sb = new System.Text.StringBuilder()
 
-    [<Fact>]
-    let ``Example part 1`` () =
-        testPart1 solution input |> should equal 0
+        input |> String.toList |> convert sb
 
-// [<Fact>]
-// let ``Example part 2`` () =
-//     testPart2 solution input |> should equal 0
+    (step ^ n) input |> String.length
+
+let solution = makeSolution parser (solve 40) (solve 50)
