@@ -55,53 +55,57 @@ let simulateBlueprint time blueprint =
         // recursively wait until we gather enough resources for creating each type of robot
         //
 
-        blueprint
-        |> Seq.indexed
-        |> Seq.rev // start with geoid-mining robot
-        // check if we even mine the ingredients
-        |> Seq.filter (snd >> List.forall (fun (_, ore) -> Array.item (mineralToIndex ore) robots > 0))
-        // can we spend the additional mineral?
-        |> Seq.filter (fun (i, _) ->
-            let c = Array.item i maxCosts
-            let r = Array.item i robots
-            let res = Array.item i resources
+        // can we surpass current maximum?
+        let maxEstimate =
+            let r = Array.last robots
+            let c = Array.last resources
+            c + timeLeft * (r + timeLeft + r) / 2
 
-            res + timeLeft * r < timeLeft * c)
-        |> Seq.fold
-            (fun currentMax (i, recipe) ->
-                // can we surpass current maximum?
-                let maxEstimate =
-                    let r = Array.last robots
-                    let c = Array.last resources
-                    c + timeLeft * (r + timeLeft + r) / 2
+        if maxEstimate < currentMax then
+            currentMax
+        else
+            blueprint
+            |> Seq.indexed
+            |> Seq.rev // start with geoid-mining robot
+            // check if we even mine the ingredients
+            |> Seq.filter (snd >> List.forall (fun (_, ore) -> Array.item (mineralToIndex ore) robots > 0))
+            // can we spend the additional mineral?
+            |> Seq.filter (fun (i, _) ->
+                let c = Array.item i maxCosts
+                let r = Array.item i robots
+                let res = Array.item i resources
 
-                // how long until we have the resources
-                let waitTime =
-                    recipe
-                    |> List.map (fun (count, ore) ->
-                        let currentlyHave = Array.item (mineralToIndex ore) resources
-                        let toMine = count - currentlyHave
+                res + timeLeft * r < timeLeft * c)
+            |> Seq.fold
+                (fun currentMax (i, recipe) ->
 
-                        if (toMine <= 0) then
-                            0
-                        else
-                            let miners = Array.item (mineralToIndex ore) robots
-                            toMine / miners + sign (toMine % miners))
-                    |> List.max
-
-                if waitTime >= timeLeft - 1 || maxEstimate < currentMax then
-                    currentMax
-                else
-                    let afterWait = Array.map2 (fun c r -> c + r * (waitTime + 1)) resources robots
-
-                    let afterBuild =
+                    // how long until we have the resources
+                    let waitTime =
                         recipe
-                        |> List.fold
-                            (fun ress (count, ore) -> Array.mapAt (mineralToIndex ore) (flip (-) count) ress)
-                            afterWait
+                        |> List.map (fun (count, ore) ->
+                            let currentlyHave = Array.item (mineralToIndex ore) resources
+                            let toMine = count - currentlyHave
 
-                    simulateStep currentMax (timeLeft - waitTime - 1, afterBuild, Array.mapAt i ((+) 1) robots))
-            ifWaited
+                            if (toMine <= 0) then
+                                0
+                            else
+                                let miners = Array.item (mineralToIndex ore) robots
+                                toMine / miners + sign (toMine % miners))
+                        |> List.max
+
+                    if waitTime >= timeLeft - 1 then
+                        currentMax // can't build the robot in time for it to matter
+                    else
+                        let afterWait = Array.map2 (fun c r -> c + r * (waitTime + 1)) resources robots
+
+                        let afterBuild =
+                            recipe
+                            |> List.fold
+                                (fun ress (count, ore) -> Array.mapAt (mineralToIndex ore) (flip (-) count) ress)
+                                afterWait
+
+                        simulateStep currentMax (timeLeft - waitTime - 1, afterBuild, Array.mapAt i ((+) 1) robots))
+                ifWaited
 
     simulateStep 0 (time, [| 0; 0; 0; 0 |], [| 1; 0; 0; 0 |])
 
