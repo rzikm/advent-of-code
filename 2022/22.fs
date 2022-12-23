@@ -33,9 +33,6 @@ let tryGet board (x, y) =
         return! Array.tryItem (x - offset) row
     }
 
-let rotLeft (x, y) = (y, -x)
-let rotRight (x, y) = (-y, x)
-
 let move1 board (pos, dir) =
     let afterMove = Tuple2.add pos dir
 
@@ -84,16 +81,16 @@ let move2 board =
                 if tryGet board (endP |> Tuple2.add dir |> Tuple2.add norm) |> Option.isSome then
                     // next edge rotates left
                     start <- endP |> Tuple2.add dir |> Tuple2.add norm
-                    norm <- rotLeft norm
-                    dir <- rotLeft dir
+                    norm <- Tuple2.rotLeft norm
+                    dir <- Tuple2.rotLeft dir
                 else if tryGet board (endP |> Tuple2.add dir) |> Option.isSome then
                     // next edge continues in the same direction
                     start <- endP |> Tuple2.add dir
                 else
                     // next edge rotates right
                     start <- endP
-                    norm <- rotRight norm
-                    dir <- rotRight dir
+                    norm <- Tuple2.rotRight norm
+                    dir <- Tuple2.rotRight dir
         }
 
     //
@@ -120,12 +117,12 @@ let move2 board =
             match stack with
             | [] -> ([ (edge, adjustedDir) ], map, adjustmentRotation)
             | (prev, prevAdjustedDir) :: restStack ->
-                if rotLeft prevAdjustedDir = adjustedDir then
+                if Tuple2.rotLeft prevAdjustedDir = adjustedDir then
                     // next edge rotates left, it will fold onto the top of the stack
                     let newMap = map |> Map.add prev edge |> Map.add edge prev
 
                     // all subsequent edges need to be rotated left, increase adjustment rotation
-                    (restStack, newMap, rotLeft adjustmentRotation)
+                    (restStack, newMap, Tuple2.rotLeft adjustmentRotation)
                 else
                     // no folding yet, push to stack
                     ((edge, adjustedDir) :: stack, map, adjustmentRotation)
@@ -157,7 +154,8 @@ let move2 board =
                 | _ -> failwith "unreachable"
 
             // get target edge
-            let (targetEdgeStart, targetEdgeDir) = Map.find (edgeStart, rotRight dir) edgeMap
+            let (targetEdgeStart, targetEdgeDir) =
+                Map.find (edgeStart, Tuple2.rotRight dir) edgeMap
 
             // calculate position along the edge
             let delta = Tuple2.manhattanDist edgeStart pos
@@ -167,7 +165,7 @@ let move2 board =
                 Tuple2.add targetEdgeStart (Tuple2.map ((*) (sideLen - 1 - delta)) targetEdgeDir)
 
             // convert clockwise direction to inward
-            let dir = rotRight targetEdgeDir
+            let dir = Tuple2.rotRight targetEdgeDir
 
             (newPos, dir)
 
@@ -191,8 +189,8 @@ let solve move (board, path) =
     let doMove (pos, dir) instruction =
         match instruction with
         | Go steps -> tryMove (move board) board (pos, dir) steps
-        | Left -> pos, rotLeft dir
-        | Right -> pos, rotRight dir
+        | Left -> pos, Tuple2.rotLeft dir
+        | Right -> pos, Tuple2.rotRight dir
 
     let dirToScore =
         function

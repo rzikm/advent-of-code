@@ -3,6 +3,7 @@ module Tuple2
 open FSharpPlus
 
 let map f (i1, i2) = (f i1, f i2)
+let map2 f (x1, x2) (y1, y2) = (f x1 y1, f x2 y2)
 
 let inline (<!>) f t = map f t
 
@@ -18,6 +19,11 @@ let inline lt t1 t2 = (<) <!> t1 <*> t2 |> uncurry (&&)
 let inline le t1 t2 = (<=) <!> t1 <*> t2 |> uncurry (&&)
 let inline gt t1 t2 = (>) <!> t1 <*> t2 |> uncurry (&&)
 let inline ge t1 t2 = (>=) <!> t1 <*> t2 |> uncurry (&&)
+
+let inline rotLeft (x, y) = (y, -x)
+let inline rotRight (x, y) = (-y, x)
+
+let broadcast x = (x, x)
 
 let inline manhattanDist t1 t2 = sub t1 t2 |> map abs |> uncurry (+)
 
