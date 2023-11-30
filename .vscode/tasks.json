@@ -45,7 +45,7 @@
             "args": [
                 "test",
                 "--filter",
-                "AoC202212",
+                "AoC202223",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary",
             ],

@@ -1,4 +1,4 @@
-module AoC2020XX
+module AoCYYYYXX
 
 open AdventOfCode
 open FSharpPlus
