@@ -21,15 +21,12 @@ let digitsAsWords =
       "nine", 9 ]
 
 let solve digits input =
-    let idxes find =
-        digits
-        |> List.choose (fun (w, d) ->
-            let i = find w
-            if (i >= 0) then Some((d, i)) else None)
+    let getDigit s find minMax =
+        digits |> List.choose (fun (w, d) -> find w s |> Option.map (fun i -> d, i)) |> minMax snd |> fst
 
-    let f (s: string) =
-        let first = idxes (fun (w: string) -> s.IndexOf(w)) |> List.minBy snd |> fst
-        let last = idxes (fun (w: string) -> s.LastIndexOf(w)) |> List.maxBy snd |> fst
+    let f s =
+        let first = getDigit s String.tryFindSliceIndex List.minBy
+        let last = getDigit s String.tryFindLastSliceIndex List.maxBy
 
         10 * first + last
 
