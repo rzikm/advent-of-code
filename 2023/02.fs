@@ -5,25 +5,18 @@ open FSharpPlus
 open FParsec
 
 type Draw = { Red: int; Green: int; Blue: int }
-
 type Game = { Index: int; Draws: Draw list }
 
+let drawMap2 f (l: Draw) (r: Draw) = { Red = f l.Red r.Red; Green = f l.Green r.Green; Blue = f l.Blue r.Blue }
+
 let parser =
-    let red =
-        pint32 .>>? pstring " red" |>> fun count -> { Red = int count; Green = 0; Blue = 0 }
+    let cube = choice [ 
+            pint32 .>>? pstring " red" |>> fun count -> { Red = int count; Green = 0; Blue = 0 }
+            pint32 .>>? pstring " green" |>> fun count -> { Red = 0; Green = int count; Blue = 0 }
+            pint32 .>>? pstring " blue" |>> fun count -> { Red = 0; Green = 0; Blue = int count }
+        ]
 
-    let green =
-        pint32 .>>? pstring " green" |>> fun count -> { Red = 0; Green = int count; Blue = 0 }
-
-    let blue =
-        pint32 .>>? pstring " blue" |>> fun count -> { Red = 0; Green = 0; Blue = int count }
-
-    let cube = choice [ red; green; blue ]
-
-    let reduce (d1: Draw) (d2: Draw) =
-        { Red = d1.Red + d2.Red; Green = d1.Green + d2.Green; Blue = d1.Blue + d2.Blue }
-
-    let draw = sepBy1 cube (skipString ", ") |>> List.reduce reduce
+    let draw = sepBy1 cube (skipString ", ") |>> List.reduce (drawMap2 (+))
 
     let game =
         pstring "Game " >>. pint32 .>> pstring ": " .>>. sepBy1 draw (skipString "; ")
@@ -38,19 +31,13 @@ let solve1 input =
         let isPossibleDraw (draw: Draw) =
             testDraw.Red >= draw.Red && testDraw.Green >= draw.Green && testDraw.Blue >= draw.Blue
 
-        game.Draws |> List.forall isPossibleDraw
+        game.Draws |> List.reduce (drawMap2 max) |> isPossibleDraw
 
     input |> List.filter (isPossible testDraw) |> List.sumBy _.Index
 
 let solve2 input =
-    let maxReducer =
-        fun (acc: Draw) (draw: Draw) ->
-            { Red = max acc.Red draw.Red
-              Green = max acc.Green draw.Green
-              Blue = max acc.Blue draw.Blue }
-
     let powerOfGame (game: Game) =
-        game.Draws |> List.reduce maxReducer |> (fun draw -> draw.Red * draw.Green * draw.Blue)
+        game.Draws |> List.reduce (drawMap2 max) |> (fun draw -> draw.Red * draw.Green * draw.Blue)
 
     input |> List.sumBy powerOfGame
 
