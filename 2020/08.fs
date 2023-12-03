@@ -10,17 +10,11 @@ type Instruction =
     | Nop of int
 
 let parser =
-    let acc =
-        pstring "acc " >>. pint32 .>> restOfLine true
-        |>> Acc
+    let acc = pstring "acc " >>. pint32 .>> restOfLine true |>> Acc
 
-    let jmp =
-        pstring "jmp " >>. pint32 .>> restOfLine true
-        |>> Jmp
+    let jmp = pstring "jmp " >>. pint32 .>> restOfLine true |>> Jmp
 
-    let nop =
-        pstring "nop " >>. pint32 .>> restOfLine true
-        |>> Nop
+    let nop = pstring "nop " >>. pint32 .>> restOfLine true |>> Nop
 
     many1 <| choice [ acc; jmp; nop ] |>> Array.ofSeq
 
@@ -52,12 +46,8 @@ let hard input =
         | Jmp x -> Array.updateAt i (Nop x) input |> Some
         | _ -> None
 
-    input
-    |> choosei flip
-    |> Seq.map run
-    |> find (snd >> (=) (Array.length input))
-    |> fst
+    input |> choosei flip |> Seq.map run |> find (snd >> (=) (Array.length input)) |> fst
 
 let solve input = 0
 
-let solution = makeSolution parser easy hard
+let solution = makeSolution () parser easy hard

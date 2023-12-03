@@ -56,7 +56,7 @@ let solve2 input =
 
     [ 1..2 ] |> List.scan (fun c _ -> Array.item c res) 1 |> List.map int64 |> List.reduce (*)
 
-let solution = makeSolution parser (solve1 100) solve2
+let solution = makeSolution () parser (solve1 100) solve2
 
 module Tests =
     open Xunit

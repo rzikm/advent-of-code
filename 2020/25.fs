@@ -20,7 +20,8 @@ let getEncryptionKey cardPublic doorPublic =
 
     powmod 7L (c * d) m
 
-let solution = makeSolution parser (fun i -> i ||> getEncryptionKey) (fun _ -> "*")
+let solution =
+    makeSolution () parser (fun i -> i ||> getEncryptionKey) (fun _ -> "*")
 
 module Tests =
     open FsUnit

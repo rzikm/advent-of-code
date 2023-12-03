@@ -72,7 +72,7 @@ let solve2 input =
     let needed = 30000000 - free
     dirSizes |> List.sortBy snd |> List.find (fun (_, size) -> size >= needed) |> snd
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

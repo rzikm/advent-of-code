@@ -48,7 +48,7 @@ let solve2 (rules, messages) =
     let rules = Map.add 11 (SubRules [ [ 42; 31 ]; [ 42; 11; 31 ] ]) rules
     messages |> List.filter (isMatch rules) |> List.length
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

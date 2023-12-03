@@ -56,7 +56,7 @@ let solve2 input =
     let newA = solve1 input
     input |> List.map (fun i -> if snd i <> "b" then i else (Value(Number newA), "b")) |> solve1
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

@@ -33,7 +33,7 @@ let solve digits input =
     input |> List.map f |> List.sum
 
 let solution =
-    makeSolution parser (solve digits) (solve <| List.append digits digitsAsWords)
+    makeSolution () parser (solve digits) (solve <| List.append digits digitsAsWords)
 
 module Tests =
     open Xunit

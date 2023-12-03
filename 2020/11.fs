@@ -26,40 +26,32 @@ let nextRound counter threshold (input: Cell [] []) =
         Array.init (Array.length (Array.item y input)) (fun x ->
             match Array.item2d x y input with
             | Empty -> Empty
-            | Seat ->
-                if counter x y input = 0 then
-                    Occupied
-                else
-                    Seat
-            | Occupied ->
-                if counter x y input >= threshold then
-                    Seat
-                else
-                    Occupied))
+            | Seat -> if counter x y input = 0 then Occupied else Seat
+            | Occupied -> if counter x y input >= threshold then Seat else Occupied))
 
 let run input counter threshold =
     let rec finalState input =
         let next = nextRound counter threshold input
 
-        if next <> input then
-            finalState next
-        else
-            next
+        if next <> input then finalState next else next
 
-    finalState input
-    |> Array.sumBy (Array.sumBy (fun c -> if c = Occupied then 1 else 0))
+    finalState input |> Array.sumBy (Array.sumBy (fun c -> if c = Occupied then 1 else 0))
 
-let easyCounter x y array = Array.neighbors2d8 x y array |> Seq.filter ((=) Occupied) |> Seq.length
+let easyCounter x y array =
+    Array.neighbors2d8 x y array |> Seq.filter ((=) Occupied) |> Seq.length
 
 let easy input = run input easyCounter 4
 
 let hard input =
     let counter x y array =
-        Tuple2.neighbors8 (x, y) |> Seq.choose (fun (xx, yy) -> Array.tryItem2d xx yy array) |> Seq.filter ((=) Occupied) |> Seq.length
+        Tuple2.neighbors8 (x, y)
+        |> Seq.choose (fun (xx, yy) -> Array.tryItem2d xx yy array)
+        |> Seq.filter ((=) Occupied)
+        |> Seq.length
 
     run input counter 5
 
-let solution = makeSolution parser easy hard
+let solution = makeSolution () parser easy hard
 
 module Tests =
     open Xunit
@@ -92,10 +84,7 @@ module Tests =
                "#.#####.##" |]
             |> parseTestInput parser
 
-        input
-        |> parseTestInput parser
-        |> nextRound easyCounter 4
-        |> should equal expected
+        input |> parseTestInput parser |> nextRound easyCounter 4 |> should equal expected
 
     [<Fact>]
     let ``Example step 2`` () =
@@ -112,10 +101,7 @@ module Tests =
                "#.#LLLL.##" |]
             |> parseTestInput parser
 
-        input
-        |> parseTestInput parser
-        |> (nextRound easyCounter 4)^2
-        |> should equal expected
+        input |> parseTestInput parser |> (nextRound easyCounter 4) ^ 2 |> should equal expected
 
     [<Fact>]
     let ``Example final step`` () =
@@ -132,10 +118,7 @@ module Tests =
                "#.#L#L#.##" |]
             |> parseTestInput parser
 
-        input
-        |> parseTestInput parser
-        |> (nextRound easyCounter 4)^5
-        |> should equal expected
+        input |> parseTestInput parser |> (nextRound easyCounter 4) ^ 5 |> should equal expected
 
     [<Fact>]
     let ``Example part 1`` () =

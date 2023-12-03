@@ -16,10 +16,7 @@ let easy len (input: int64 list) =
         match input with
         | [] -> failwith "Not found"
         | i :: rest ->
-            match
-                Utils.subsets 2 preamble |> Seq.map List.sum
-                |> tryFind ((=) i)
-                with
+            match Utils.subsets 2 preamble |> Seq.map List.sum |> tryFind ((=) i) with
             | Some _ -> f (List.skip 1 preamble @ [ i ]) rest
             | None -> i
 
@@ -41,7 +38,7 @@ let hard len (input: int64 list) =
     f 0 0 (Array.item 0 input)
 
 let makeSolution len =
-    makeSolution parser (easy len) (hard len)
+    makeSolution () parser (easy len) (hard len)
 
 let solution = makeSolution 25
 
@@ -73,10 +70,8 @@ module Tests =
 
     [<Fact>]
     let ``Example part 1`` () =
-        testPart1 (makeSolution 5) input5
-        |> should equal 127L
+        testPart1 (makeSolution 5) input5 |> should equal 127L
 
     [<Fact>]
     let ``Example part 2`` () =
-        testPart2 (makeSolution 5) input5
-        |> should equal 62L
+        testPart2 (makeSolution 5) input5 |> should equal 62L

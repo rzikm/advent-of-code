@@ -12,9 +12,9 @@ let parser =
 
 let cloneMap arr = Array.map (Array.map id) arr
 
-let mapAt (grid: int[][]) f (x, y) = grid.[y].[x] <- f grid.[y].[x]
+let mapAt (grid: int [] []) f (x, y) = grid.[y].[x] <- f grid.[y].[x]
 
-let increment (grid: int[][]) =
+let increment (grid: int [] []) =
     for x in 0 .. (grid.[0].Length - 1) do
         for y in 0 .. (grid.Length - 1) do
             mapAt grid ((+) 1) (x, y)
@@ -70,4 +70,4 @@ let solve2 input =
 
     doStep' (cloneMap input) 1
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

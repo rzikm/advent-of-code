@@ -57,11 +57,20 @@ let getInvalidChar =
     | _ -> None
 
 let solve1 input =
-    let scoreMap = Map.ofList [ (')', 3); (']', 57); ('}', 1197); ('>', 25137) ]
+    let scoreMap =
+        Map.ofList [ (')', 3)
+                     (']', 57)
+                     ('}', 1197)
+                     ('>', 25137) ]
+
     input |> preprocess |> List.choose getInvalidChar |> List.sumBy (fun x -> Map.find x scoreMap)
 
 let solve2 input =
-    let scoreMap = Map.ofList [ ('(', 1L); ('[', 2L); ('{', 3L); ('<', 4L) ]
+    let scoreMap =
+        Map.ofList [ ('(', 1L)
+                     ('[', 2L)
+                     ('{', 3L)
+                     ('<', 4L) ]
 
     let scores =
         input
@@ -72,4 +81,4 @@ let solve2 input =
 
     scores.[scores.Length / 2]
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

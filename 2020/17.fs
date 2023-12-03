@@ -64,7 +64,7 @@ let solve1 input =
 let solve2 input =
     (nextIteration4d ^ 6) [| input |] |> Array.sumBy (Array.sumBy (Array.sumBy (Array.sumBy boolToInt)))
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

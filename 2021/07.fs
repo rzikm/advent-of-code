@@ -13,4 +13,4 @@ let run cost input =
 
     seq { min..max } |> Seq.map (fun x -> Array.sumBy ((-) x >> abs >> cost) input) |> Seq.min
 
-let solution = makeSolution parser (run id) (run (fun x -> x * (x + 1) / 2))
+let solution = makeSolution () parser (run id) (run (fun x -> x * (x + 1) / 2))

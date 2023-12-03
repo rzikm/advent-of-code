@@ -38,6 +38,11 @@ let solve1 input = // just use closed-form formula...
 let solve2 input =
     let ((_, maxInitX), (minY, _)) = input
     let maxInitY = -minY - 1
-    List.allPairs [ 1..maxInitX ] [ minY..maxInitY ] |> Seq.filter (doesThrowHit input) |> Seq.length
 
-let solution = makeSolution parser solve1 solve2
+    List.allPairs [ 1..maxInitX ] [
+        minY..maxInitY
+    ]
+    |> Seq.filter (doesThrowHit input)
+    |> Seq.length
+
+let solution = makeSolution () parser solve1 solve2

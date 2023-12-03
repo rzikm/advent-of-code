@@ -73,13 +73,8 @@ let runSolution year (day: int, solution: Solution) =
         use stream = System.IO.File.OpenRead filename
 
         let res =
-            match
-                runWithStopwatch
-                    (FParsec.CharParsers.runParserOnStream solution.parser () filename stream)
-                    System.Text.Encoding.UTF8
-                with
-            | FParsec.CharParsers.Success (input, _, _), time -> Ok(input, time)
-            | FParsec.CharParsers.Failure (error, _, _), _ -> Error error
+            let r, t = runWithStopwatch (solution.parse stream) filename
+            r |> Result.map (fun r -> r, t)
 
         res
         >>= (fun (input, time) ->

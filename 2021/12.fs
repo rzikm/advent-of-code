@@ -81,7 +81,7 @@ let solve2 graph =
 
     allPaths |> Seq.length
 
-let solution = makeSolution parse solve1 solve2
+let solution = makeSolution () parse solve1 solve2
 
 module Tests =
     open Xunit

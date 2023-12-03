@@ -78,7 +78,7 @@ let solve timeLimit partitions input =
     |> Seq.max
 
 let solution =
-    makeSolution parser (solve 30 Seq.singleton) (solve 26 Utils.allSubsets) //(solveAlt 26 2)
+    makeSolution () parser (solve 30 Seq.singleton) (solve 26 Utils.allSubsets) //(solveAlt 26 2)
 
 module Tests =
     open Xunit

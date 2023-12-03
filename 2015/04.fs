@@ -15,7 +15,7 @@ let solve zeros input =
     let prefix = String.init zeros (Utils.constf "0")
     Seq.initInfinite id |> Seq.find (fun n -> input + string n |> md5 |> String.startsWith prefix)
 
-let solution = makeSolution parser (solve 5) (solve 6)
+let solution = makeSolution () parser (solve 5) (solve 6)
 
 module Tests =
     open Xunit

@@ -38,7 +38,7 @@ let doMove rev crates (count, src, dst) =
 let solve rev (crates, moves) =
     List.fold (doMove rev) crates moves |> List.map (List.head >> string) |> String.concat ""
 
-let solution = makeSolution parser (solve List.rev) (solve id)
+let solution = makeSolution () parser (solve List.rev) (solve id)
 
 module Tests =
     open Xunit

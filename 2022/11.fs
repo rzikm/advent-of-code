@@ -98,7 +98,7 @@ let worry2 (input: Monkey list) =
     let test = input |> List.map (fun m -> m.Test) |> List.reduce (*)
     fun i -> i % test
 
-let solution = makeSolution parser (solve 20 worry1) (solve 10000 worry2)
+let solution = makeSolution () parser (solve 20 worry1) (solve 10000 worry2)
 
 module Tests =
     open Xunit

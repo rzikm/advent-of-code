@@ -32,7 +32,7 @@ let solve2 input =
     |> Seq.filter (flip Set.contains connected)
     |> Seq.length
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

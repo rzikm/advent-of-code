@@ -42,4 +42,4 @@ let solve2 (dots, folds) =
         String.init (maxX + 1) (fun x -> if Set.contains (x, y) finalDots then "#" else " "))
        |> String.concat "\n")
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

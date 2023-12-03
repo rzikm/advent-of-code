@@ -34,4 +34,4 @@ let solve2 input =
 
     input |> Seq.collect lineToPoints |> Seq.countBy id |> Seq.filter (snd >> (<>) 1) |> Seq.length
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

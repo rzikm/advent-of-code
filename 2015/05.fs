@@ -20,7 +20,7 @@ let isNice2 str =
 
 let solve nicef input = input |> Seq.filter nicef |> Seq.length
 
-let solution = makeSolution parser (solve isNice1) (solve isNice2)
+let solution = makeSolution () parser (solve isNice1) (solve isNice2)
 
 module Tests =
     open Xunit

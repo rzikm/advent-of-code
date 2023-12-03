@@ -24,7 +24,7 @@ let anyOverlap (l, r) =
 let solve filter input =
     input |> List.filter filter |> List.length
 
-let solution = makeSolution parser (solve fullyOverlap) (solve anyOverlap)
+let solution = makeSolution () parser (solve fullyOverlap) (solve anyOverlap)
 
 module Tests =
     open Xunit

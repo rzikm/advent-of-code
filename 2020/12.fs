@@ -42,6 +42,7 @@ let easy input =
             | 180 -> f (east, north, head) (West, arg)
             | 270 -> f (east, north, head) (North, arg)
             | _ -> failwith "Invalid heading"
+
     let (east, north, _) = input |> List.fold f (0, 0, 0)
     abs east + abs north
 
@@ -65,4 +66,4 @@ let hard input =
     let (east, north, _, _) = input |> List.fold f (0, 0, 10, 1)
     abs east + abs north
 
-let solution = makeSolution parser easy hard
+let solution = makeSolution () parser easy hard

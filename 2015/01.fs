@@ -20,7 +20,7 @@ let solve1 input = input |> List.sumBy parenToi
 let solve2 input =
     input |> Seq.scan (fun s p -> s + parenToi p) 0 |> Seq.findIndex ((=) -1)
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

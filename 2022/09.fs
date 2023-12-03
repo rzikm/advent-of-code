@@ -49,7 +49,7 @@ let solve ropeLen input =
     |> Set.ofSeq
     |> Set.count
 
-let solution = makeSolution parser (solve 2) (solve 10)
+let solution = makeSolution () parser (solve 2) (solve 10)
 
 module Tests =
     open Xunit

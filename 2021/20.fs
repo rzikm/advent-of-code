@@ -22,7 +22,11 @@ let enhanceAt algorithm (outside, scan) x y =
         scan |> Array.tryItem y |> Option.bind (Array.tryItem x) |> Option.defaultValue outside
 
     let index =
-        Seq.allPairs [ y - 1; y; y + 1 ] [ x - 1; x; x + 1 ]
+        Seq.allPairs [ y - 1; y; y + 1 ] [
+            x - 1
+            x
+            x + 1
+        ]
         |> Seq.map (fun (y, x) -> getItem scan x y |> boolToInt)
         |> Seq.reduce (fun l r -> l * 2 + r)
 
@@ -50,7 +54,7 @@ let enhanceN algorithm scan n =
 let run n (alg, scan) =
     enhanceN alg (false, scan) n |> snd |> Seq.sumBy (Seq.sumBy boolToInt)
 
-let solution = makeSolution parser (run 2) (run 50)
+let solution = makeSolution () parser (run 2) (run 50)
 
 module Tests =
     open Xunit
@@ -63,8 +67,8 @@ module Tests =
 
     let private parse input =
         match FParsec.CharParsers.run parser (String.concat "\n" input) with
-        | Success(res, _, _) -> res
-        | Failure(err, _, _) -> failwith err
+        | Success (res, _, _) -> res
+        | Failure (err, _, _) -> failwith err
 
     let input =
         [| "..#.#..#####.#.#.#.###.##.....###.##.#..###.####..#####..#....#..#..##..###..######.###...####..#..#####..##..#.#####...##.#.#..#.##..#.#......#.###.######.###.####...#.##.##..#..#..#####.....#.#....###..#.##......#.....#..#..#..##..#...##.######.####.####.#.#...#.......#..#.#.#...####.##.#......#..#...##.#.##..#...##.#.##..###.#......#.#.......#.#.#.####.###.##...#.....####.#..#..#.##.#....##..#.####....##...##..#...#......#.#.......#.......##..####..#...#.#.#...##..#.#..###..#####........#..####......#..#"

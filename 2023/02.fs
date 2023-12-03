@@ -41,7 +41,7 @@ let solve2 input =
 
     input |> List.sumBy powerOfGame
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

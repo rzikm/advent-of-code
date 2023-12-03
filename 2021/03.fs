@@ -52,7 +52,7 @@ let solve2 input =
 
     oxygenRating * co2Rating
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

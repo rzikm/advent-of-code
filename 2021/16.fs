@@ -109,4 +109,4 @@ let solve1 packet = sumPacketVersions packet
 
 let solve2 packet = evalPacket packet
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

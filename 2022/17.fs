@@ -140,7 +140,7 @@ let solve count input =
 
 // c |> List.map (Array.map (fun b -> if b then "#" else ".") >> String.concat "") |> String.concat "\n"
 
-let solution = makeSolution parser (solve 2022L) (solve 1000000000000L)
+let solution = makeSolution () parser (solve 2022L) (solve 1000000000000L)
 
 module Tests =
     open Xunit

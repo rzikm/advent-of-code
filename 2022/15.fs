@@ -39,7 +39,7 @@ let solve2 size input =
         | [ (s1, e1); (s2, e2) ] -> Some(int64 (e1 + 1) * 4000000L + int64 row)
         | _ -> None)
 
-let solution = makeSolution parser (solve1 2000000) (solve2 4000000)
+let solution = makeSolution () parser (solve1 2000000) (solve2 4000000)
 
 module Tests =
     open Xunit

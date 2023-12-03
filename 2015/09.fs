@@ -20,7 +20,7 @@ let solve mm input =
     |> Seq.map (fun p -> List.pairwise p |> List.sumBy (flip Map.find distances))
     |> Seq.reduce mm
 
-let solution = makeSolution parser (solve min) (solve max)
+let solution = makeSolution () parser (solve min) (solve max)
 
 module Tests =
     open Xunit

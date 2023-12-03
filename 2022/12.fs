@@ -30,7 +30,7 @@ let solve toChar input =
     |> Option.get
     |> snd
 
-let solution = makeSolution parser (solve 'S') (solve 'a')
+let solution = makeSolution () parser (solve 'S') (solve 'a')
 
 module Tests =
     open Xunit

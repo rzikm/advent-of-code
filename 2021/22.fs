@@ -59,7 +59,7 @@ let solve1 input =
 let solve2 input =
     input |> Seq.map snd |> Seq.reduce unionCuboid |> getOnCount input
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit
@@ -67,8 +67,8 @@ module Tests =
 
     let private parse input =
         match FParsec.CharParsers.run parser input with
-        | Success(res, _, _) -> res
-        | Failure(err, _, _) -> failwith err
+        | Success (res, _, _) -> res
+        | Failure (err, _, _) -> failwith err
 
     [<Fact>]
     let ``Small input`` () =

@@ -25,7 +25,7 @@ let solve2 input =
     |> List.chunkBySize 3
     |> List.sumBy (List.map Set.ofArray >> Set.intersectMany >> Set.toSeq >> Seq.sumBy getPriority)
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

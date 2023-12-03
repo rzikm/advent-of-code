@@ -26,15 +26,9 @@ let countTrees (dx, dy) input =
 let part1 input = countTrees (3, 1) input
 
 let part2 input =
-    [ (1, 1)
-      (3, 1)
-      (5, 1)
-      (7, 1)
-      (1, 2) ]
-    |> List.map (fun d -> countTrees d input |> int64)
-    |> List.reduce (*)
+    [ (1, 1); (3, 1); (5, 1); (7, 1); (1, 2) ] |> List.map (fun d -> countTrees d input |> int64) |> List.reduce (*)
 
-let solution = makeSolution parser part1 part2
+let solution = makeSolution () parser part1 part2
 
 module Tests =
     open Xunit

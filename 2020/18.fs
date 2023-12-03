@@ -53,7 +53,7 @@ let rec evalExpr2 expr =
 
 let solve eval input = input |> List.sumBy eval
 
-let solution = makeSolution parser (solve evalExpr1) (solve evalExpr2)
+let solution = makeSolution () parser (solve evalExpr1) (solve evalExpr2)
 
 module Tests =
     open Xunit

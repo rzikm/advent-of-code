@@ -6,7 +6,15 @@ open FParsec
 
 let parser =
     let pSet =
-        many1Chars (choice [ pchar 'a'; pchar 'b'; pchar 'c'; pchar 'd'; pchar 'e'; pchar 'f'; pchar 'g' ])
+        many1Chars (
+            choice [ pchar 'a'
+                     pchar 'b'
+                     pchar 'c'
+                     pchar 'd'
+                     pchar 'e'
+                     pchar 'f'
+                     pchar 'g' ]
+        )
         |>> (String.toSeq >> Set.ofSeq)
 
     let pLine = sepEndBy pSet (pchar ' ') .>> pstring "| " .>>. sepBy pSet (pchar ' ')
@@ -38,17 +46,16 @@ let solve2 input =
         let d0 = digits |> pick (Set.count >> (=) 6 <&> (<>) d9 <&> Set.isSubset d1)
         let d6 = digits |> pick (Set.count >> (=) 6 <&> (<>) d9 <&> (<>) d0)
 
-        Map.ofList
-            [ (d0, 0)
-              (d1, 1)
-              (d2, 2)
-              (d3, 3)
-              (d4, 4)
-              (d5, 5)
-              (d6, 6)
-              (d7, 7)
-              (d8, 8)
-              (d9, 9) ]
+        Map.ofList [ (d0, 0)
+                     (d1, 1)
+                     (d2, 2)
+                     (d3, 3)
+                     (d4, 4)
+                     (d5, 5)
+                     (d6, 6)
+                     (d7, 7)
+                     (d8, 8)
+                     (d9, 9) ]
 
     let getValue ((digits: Set<char> list), (valueDigits: Set<char> list)) =
         let mapping = getMapping digits
@@ -58,4 +65,4 @@ let solve2 input =
 
     List.sumBy getValue input
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

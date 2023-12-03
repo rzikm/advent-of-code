@@ -49,7 +49,7 @@ let solve2 input =
     |> Seq.length
     |> (+) 1
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

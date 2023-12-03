@@ -25,7 +25,10 @@ let run n (template, rules) =
         counts
         |> Map.toSeq
         |> Seq.map (fun ((l, r), count) ->
-            let m = Map.find (l, r) rules in Map.ofList [ ((l, m), count); ((m, r), count) ])
+            let m = Map.find (l, r) rules in
+
+            Map.ofList [ ((l, m), count)
+                         ((m, r), count) ])
         |> Seq.reduce (mapMerge (+))
 
     let initCounts =
@@ -45,4 +48,4 @@ let run n (template, rules) =
 
     List.max letterCounts - List.min letterCounts
 
-let solution = makeSolution parser (run 10) (run 40)
+let solution = makeSolution () parser (run 10) (run 40)

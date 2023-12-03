@@ -204,7 +204,7 @@ let solve move (board, path) =
 
     1000 * (row + 1) + 4 * (col + 1) + dirToScore finalDir
 
-let solution = makeSolution parser (solve move1) (solve move2)
+let solution = makeSolution () parser (solve move1) (solve move2)
 
 module Tests =
     open Xunit

@@ -29,13 +29,13 @@ The input (the program) is composed of 14 blocks like:
 
 which can be roughly decoded as:
 
-    let eval (up, v0, v1) input z = 
+    let eval (up, v0, v1) input z =
         let mutable z = z
         let x = z % 26
-    
-        if not up then 
+
+        if not up then
             z <- z / 26
-    
+
         if x + v0 <> input then
             z <- z * 26 + input + v1
         z
@@ -125,7 +125,7 @@ let solve minmax prg =
 
     f prg [] (Array.zeroCreate 14) 0 |> Array.map int64 |> Array.reduce (fun l r -> l * 10L + r)
 
-let solution = makeSolution parser (solve max) (solve min)
+let solution = makeSolution () parser (solve max) (solve min)
 
 // code in the following module was used for interactive investigation of the provided input and is
 // unnecessary for the solution
@@ -170,8 +170,8 @@ module Unused =
         let pProgram = parray 14 pSequence
 
         match run pProgram input with
-        | Success(res, _, _) -> res
-        | Failure(err, _, _) -> failwith err
+        | Success (res, _, _) -> res
+        | Failure (err, _, _) -> failwith err
 
     let update reg f (w, x, y, z) =
         match reg with

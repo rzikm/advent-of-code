@@ -14,4 +14,4 @@ let solve1 input =
 let solve2 input =
     input |> List.windowed 3 |> List.map List.sum |> solve1
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

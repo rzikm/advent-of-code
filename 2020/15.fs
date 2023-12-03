@@ -36,7 +36,7 @@ let solve1 input = spokenNumbers input 2020 |> Seq.last
 let solve2 input =
     spokenNumbers input 30000000 |> Seq.last
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

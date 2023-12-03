@@ -47,7 +47,7 @@ let solve2 input =
 
     input |> List.fold applyInstr (Array.init2d 1000 1000 (fun _ _ -> 0)) |> Array.sumBy (Array.sum)
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

@@ -22,7 +22,7 @@ let measure1 dim = area dim + (List.min (sides dim))
 let measure2 dim =
     (sidePerimeters dim |> List.min) + volume dim
 
-let solution = makeSolution parser (List.sumBy measure1) (List.sumBy measure2)
+let solution = makeSolution () parser (List.sumBy measure1) (List.sumBy measure2)
 
 module Tests =
     open Xunit

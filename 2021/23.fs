@@ -246,7 +246,7 @@ let solve2 input =
 
     Graph.aStar (fHeuristic 4) (getNeighbors 4) ((=) finish) [ newStart ] |> Option.get |> snd
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

@@ -5,18 +5,13 @@ open FParsec
 open FSharpPlus
 
 let parser =
-    let nonwhite =
-        satisfy (System.Char.IsWhiteSpace >> not)
+    let nonwhite = satisfy (System.Char.IsWhiteSpace >> not)
 
     let pline = pint32
     let pgroup = sepEndBy1 pline (pchar '\n')
     sepEndBy1 pgroup (pchar '\n')
 
 let solve count input =
-    List.map List.sum input
-    |> List.sortBy (~-)
-    |> List.take count
-    |> List.sum
+    List.map List.sum input |> List.sortBy (~-) |> List.take count |> List.sum
 
-let solution = makeSolution parser (solve 1) (solve 3)
-
+let solution = makeSolution () parser (solve 1) (solve 3)

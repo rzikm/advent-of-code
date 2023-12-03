@@ -9,7 +9,7 @@ let parser = many1 (satisfy isLetter)
 let findStart len input =
     (input |> Seq.windowed len |> Seq.findIndex (Seq.distinct >> Seq.length >> (=) len)) + len
 
-let solution = makeSolution parser (findStart 4) (findStart 14)
+let solution = makeSolution () parser (findStart 4) (findStart 14)
 
 module Tests =
     open Xunit

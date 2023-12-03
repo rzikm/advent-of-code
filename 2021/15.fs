@@ -37,4 +37,4 @@ let solve2 (input: int [] []) =
 
     Graph.aStar fHeuristic fNeighbors ((=) finish) [ (0, 0) ] |> Option.get |> snd
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

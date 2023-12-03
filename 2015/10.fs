@@ -27,4 +27,4 @@ let solve n input =
 
     (step ^ n) input |> String.length
 
-let solution = makeSolution parser (solve 40) (solve 50)
+let solution = makeSolution () parser (solve 40) (solve 50)

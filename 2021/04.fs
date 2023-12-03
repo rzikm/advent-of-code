@@ -9,7 +9,7 @@ type Cell =
     | Unchecked of int
     | Checked of int
 
-type Input = { Numbers: int list; Bingos: Cell[][] list }
+type Input = { Numbers: int list; Bingos: Cell [] [] list }
 
 let parser =
     let pNumbers = sepBy pint32 (pchar ',')
@@ -25,25 +25,25 @@ let parser =
 
     pNumbers .>> spaces .>>. pBingoList
 
-type State = { Checked: int list; Winner: Cell[][] option; Players: Cell[][] list }
+type State = { Checked: int list; Winner: Cell [] [] option; Players: Cell [] [] list }
 
 let checkCell n cell =
     match cell with
     | Unchecked x when x = n -> Checked n
     | x -> x
 
-let checkNum n (bingo: Cell[][]) =
+let checkNum n (bingo: Cell [] []) =
     bingo |> Array.map (Array.map (checkCell n))
 
 let isWinner bingo =
     let isRowChecked row =
         match row with
-        | [| Checked(_); Checked(_); Checked(_); Checked(_); Checked(_) |] -> true
+        | [| Checked (_); Checked (_); Checked (_); Checked (_); Checked (_) |] -> true
         | _ -> false
 
     Array.exists isRowChecked bingo || bingo |> Array.transpose |> Array.exists isRowChecked
 
-let findWinner (bingos: Cell[][] list) =
+let findWinner (bingos: Cell [] [] list) =
     let winners, notWinners = bingos |> List.partition isWinner
 
     match winners with
@@ -93,4 +93,4 @@ let solve2 (nums, bingos) =
     let finalState = List.fold fold initState nums
     (List.head finalState.Checked) * (finalState.Winner.Value |> getUnchecked |> Array.sum)
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

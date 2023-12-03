@@ -193,7 +193,7 @@ let solve2 input =
     getBitCount flatImage - occurences * (getBitCount pattern)
 
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

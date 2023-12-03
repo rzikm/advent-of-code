@@ -60,7 +60,7 @@ let solve input =
 
     run input 1
 
-let solution = makeSolution parser solve (fun _ -> "*")
+let solution = makeSolution () parser solve (fun _ -> "*")
 
 module Tests =
     open Xunit
@@ -68,8 +68,8 @@ module Tests =
 
     let private parse input =
         match FParsec.CharParsers.run parser (String.concat "\n" input) with
-        | Success(res, _, _) -> res
-        | Failure(err, _, _) -> failwith err
+        | Success (res, _, _) -> res
+        | Failure (err, _, _) -> failwith err
 
     let input =
         [| "v...>>.vv>"

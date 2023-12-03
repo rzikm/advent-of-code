@@ -10,24 +10,16 @@ let parser =
 
     let pword = many1Satisfy (fun c -> System.Char.IsWhiteSpace c |> not)
 
-    let pcolor =
-        pword .>> pspace .>>. pword
-        |>> (fun (l, r) -> l + " " + r)
+    let pcolor = pword .>> pspace .>>. pword |>> (fun (l, r) -> l + " " + r)
 
-    let pbags =
-        pcolor
-        .>> pspace
-        .>> pstring "bag"
-        .>> optional (pchar 's')
+    let pbags = pcolor .>> pspace .>> pstring "bag" .>> optional (pchar 's')
 
     let pcontainedBags = sepBy1 (pint32 .>> pspace .>>. pbags) (pstring ", ")
 
     let pcontainedNothing = pstring "no other bags" >>% []
 
     let pline =
-        pbags .>> pstring " contain "
-        .>>. (pcontainedBags <|> pcontainedNothing)
-        .>> skipRestOfLine false
+        pbags .>> pstring " contain " .>>. (pcontainedBags <|> pcontainedNothing) .>> skipRestOfLine false
 
     sepEndBy1 pline (pchar '\n')
 
@@ -56,14 +48,13 @@ let part2 input =
     let containingMap = Map.ofList input
 
     let totalBags frec color =
-        Map.find color containingMap
-        |> List.sumBy (fun (count, innerColor) -> count * (1 + frec innerColor))
+        Map.find color containingMap |> List.sumBy (fun (count, innerColor) -> count * (1 + frec innerColor))
 
     memoizerec totalBags "shiny gold"
 
 let solve input = 0
 
-let solution = makeSolution parser part1 part2
+let solution = makeSolution () parser part1 part2
 
 module Tests =
     open Xunit

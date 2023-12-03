@@ -115,7 +115,7 @@ let solve1 input =
 let solve2 input =
     input |> List.truncate 3 |> List.map (fun (i, blueprint) -> simulateBlueprint 32 (blueprint)) |> List.reduce (*)
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

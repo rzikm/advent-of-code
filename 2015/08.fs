@@ -46,7 +46,7 @@ let solve f input =
         let u = f s
         String.length s - String.length u |> abs)
 
-let solution = makeSolution parser (solve unquote) (solve quote)
+let solution = makeSolution () parser (solve unquote) (solve quote)
 
 module Tests =
     open Xunit

@@ -109,7 +109,7 @@ let solve2 (bounds, blizzards) =
     pathFind (bounds, blizzards) [ goal; start; goal ]
 
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

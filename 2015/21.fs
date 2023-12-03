@@ -8,7 +8,7 @@ let parser = pint32
 
 let solve input = 0
 
-let solution = makeSolution parser solve solve
+let solution = makeSolution () parser solve solve
 
 module Tests =
     open Xunit

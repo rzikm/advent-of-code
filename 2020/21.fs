@@ -47,7 +47,7 @@ let solve2 foods =
 
     findMatching possibilities |> Option.get |> List.sortBy fst |> List.map snd |> String.concat ","
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

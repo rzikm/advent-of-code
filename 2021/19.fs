@@ -140,7 +140,7 @@ let solve2 (input: Scanner list) =
     |> List.map (fun ((_, _, a), (_, _, b)) -> vectorSub a b |> vectorMannhattan)
     |> List.max
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit
@@ -148,8 +148,8 @@ module Tests =
 
     let private parse input =
         match run parser (String.concat "\n" input) with
-        | Success(res, _, _) -> res
-        | Failure(err, _, _) -> failwith err
+        | Success (res, _, _) -> res
+        | Failure (err, _, _) -> failwith err
 
     let input =
         [| "--- scanner 0 ---

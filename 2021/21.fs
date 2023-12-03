@@ -10,11 +10,11 @@ open System.Collections.Generic
 type PlayerState = PlayerState of position: int * score: int
 
 module PlayerState =
-    let play (PlayerState(pos, score)) roll =
+    let play (PlayerState (pos, score)) roll =
         let newPos = (pos + roll - 1) % 10 + 1
         PlayerState(newPos, score + newPos)
 
-    let score (PlayerState(_, score)) = score
+    let score (PlayerState (_, score)) = score
 
 type Die = DeterministicDie of int
 
@@ -92,7 +92,7 @@ let solve2 (p0, p1) =
 
     GameState.newGame p0 p1 |> getWinnersCount ||> max
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

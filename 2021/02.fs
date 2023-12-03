@@ -37,4 +37,4 @@ let solve2 input =
     let (depth, dist, _) = input |> List.fold applyState (0, 0, 0)
     depth * dist
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2

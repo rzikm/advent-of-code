@@ -44,7 +44,7 @@ let solve2 input =
     |> Seq.distinct
     |> Seq.length
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

@@ -9,9 +9,9 @@ let parser =
     let pLine = many1 pDigit |>> Array.ofSeq
     sepEndBy pLine spaces |>> Array.ofSeq
 
-let item (input: int[][]) (x, y) = input.[y].[x]
+let item (input: int [] []) (x, y) = input.[y].[x]
 
-let tryItem (input: int[][]) (x, y) =
+let tryItem (input: int [] []) (x, y) =
     input |> Array.tryItem y |> Option.bind (Array.tryItem x)
 
 let getNeighborCoords (x, y) =
@@ -20,7 +20,7 @@ let getNeighborCoords (x, y) =
 let getNeighbors input (x, y) =
     getNeighborCoords (x, y) |> List.choose (tryItem input)
 
-let lowestPoints (input: int[][]) =
+let lowestPoints (input: int [] []) =
     Seq.allPairs (seq { 0 .. input.[0].Length - 1 }) (seq { 0 .. input.Length - 1 })
     |> Seq.map (fun coords -> (item input coords), coords)
     |> Seq.filter (fun (i, coords) -> getNeighbors input coords |> List.forall ((<) i))
@@ -53,7 +53,7 @@ let getBasinSize input coord =
 let solve2 input =
     input |> lowestPoints |> Seq.map (getBasinSize input) |> Seq.sortDescending |> Seq.take 3 |> Seq.reduce (*)
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit

@@ -96,7 +96,7 @@ let solve iterations mult input =
 
     [ 1000; 2000; 3000 ] |> List.map (fun i -> stepChain succ i zero) |> List.sumBy (fun i -> getValue i succ)
 
-let solution = makeSolution parser (solve 1 1L) (solve 10 811589153L)
+let solution = makeSolution () parser (solve 1 1L) (solve 10 811589153L)
 
 module Tests =
     open Xunit

@@ -10,13 +10,9 @@ let solve input = 0
 
 let easy input =
     let counts =
-        [ 0; List.max (input) + 3 ] @ input
-        |> List.sort
-        |> Seq.pairwise
-        |> Seq.countBy (fun (a, b) -> b - a)
+        [ 0; List.max (input) + 3 ] @ input |> List.sort |> Seq.pairwise |> Seq.countBy (fun (a, b) -> b - a)
 
-    (counts |> find (fst >> (=) 1) |> snd)
-    * ((counts |> find (fst >> (=) 3) |> snd))
+    (counts |> find (fst >> (=) 1) |> snd) * ((counts |> find (fst >> (=) 3) |> snd))
 
 let hard input =
     let max = List.max input
@@ -26,14 +22,13 @@ let hard input =
         if i = 0 then
             1L
         else if Set.contains i nums then
-            [ 1; 2; 3 ]
-            |> List.sumBy (fun delta -> frec (i - delta))
+            [ 1; 2; 3 ] |> List.sumBy (fun delta -> frec (i - delta))
         else
             0L
 
     Utils.memoizerec f max
 
-let solution = makeSolution parser easy hard
+let solution = makeSolution () parser easy hard
 
 module Tests =
     open Xunit

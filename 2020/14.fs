@@ -15,7 +15,12 @@ type Instr =
 
 let parser =
     let setMask =
-        pstring "mask = " >>. parray 36 (choice [ charReturn 'X' NoChange; charReturn '1' Set; charReturn '0' Unset ])
+        pstring "mask = "
+        >>. parray
+                36
+                (choice [ charReturn 'X' NoChange
+                          charReturn '1' Set
+                          charReturn '0' Unset ])
         |>> SetMask
 
     let setMem = pstring "mem[" >>. pint64 .>> pstring "] = " .>>. pint64 |>> SetMem
@@ -35,7 +40,7 @@ let applyMask mask value =
 let eval1 (memory, mask) instr =
     match instr with
     | SetMask newMask -> (memory, newMask)
-    | SetMem(addr, value) -> (Map.add addr (applyMask mask value) memory, mask)
+    | SetMem (addr, value) -> (Map.add addr (applyMask mask value) memory, mask)
 
 let allAddresses bitmask addr =
     Array.foldBack
@@ -51,12 +56,12 @@ let allAddresses bitmask addr =
 let eval2 (memory, mask) instr =
     match instr with
     | SetMask newMask -> (memory, newMask)
-    | SetMem(addr, value) -> (allAddresses mask addr |> List.fold (fun m a -> Map.add a value m) memory, mask)
+    | SetMem (addr, value) -> (allAddresses mask addr |> List.fold (fun m a -> Map.add a value m) memory, mask)
 
 let solve eval input =
     input |> List.fold eval (Map.empty, Array.init 36 (fun _ -> NoChange)) |> fst |> Map.values |> Seq.sum
 
-let solution = makeSolution parser (solve eval1) (solve eval2)
+let solution = makeSolution () parser (solve eval1) (solve eval2)
 
 module Tests =
     open Xunit
@@ -73,7 +78,17 @@ module Tests =
     let ``Floats addresses correctly`` () =
         let mask = [| Unset; NoChange; Unset; NoChange; NoChange |]
         let addr = 0b11010L
-        let expected = Set.ofList [ 16L; 17L; 18L; 19L; 24L; 25L; 26L; 27L ]
+
+        let expected =
+            Set.ofList [ 16L
+                         17L
+                         18L
+                         19L
+                         24L
+                         25L
+                         26L
+                         27L ]
+
         allAddresses mask addr |> Set.ofList |> should equal expected
 
     let input1 =

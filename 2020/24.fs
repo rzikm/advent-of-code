@@ -73,7 +73,7 @@ let solve2 iters input =
 
     (iter ^ iters) blackTiles |> Set.count
 
-let solution = makeSolution parser solve1 (solve2 100)
+let solution = makeSolution () parser solve1 (solve2 100)
 
 module Tests =
     open Xunit

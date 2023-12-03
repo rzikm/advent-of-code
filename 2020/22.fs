@@ -51,7 +51,7 @@ let play2 (left, right) =
 let solve play input =
     play input |> List.rev |> List.fold (fun (acc, c) i -> (acc + c * i, c + 1)) (0, 1) |> fst
 
-let solution = makeSolution parser (solve play1) (solve play2)
+let solution = makeSolution () parser (solve play1) (solve play2)
 
 module Tests =
     open Xunit

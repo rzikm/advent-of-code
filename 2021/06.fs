@@ -21,4 +21,4 @@ let run iterCount input =
 
     Seq.fold fold grouped (Seq.replicate iterCount 0) |> Seq.sumBy snd
 
-let solution = makeSolution parser (run 80) (run 256)
+let solution = makeSolution () parser (run 80) (run 256)

@@ -6,19 +6,13 @@ open FParsec
 open System.Text.RegularExpressions
 
 let parser =
-    let pnonwhite =
-        satisfy (fun c -> System.Char.IsWhiteSpace c |> not)
+    let pnonwhite = satisfy (fun c -> System.Char.IsWhiteSpace c |> not)
 
-    let pword =
-        many1Satisfy (fun c -> System.Char.IsWhiteSpace c |> not)
+    let pword = many1Satisfy (fun c -> System.Char.IsWhiteSpace c |> not)
 
-    let pfield =
-        (parray 3 pnonwhite |>> String.ofArray)
-        .>> pchar ':'
-        .>>. pword
+    let pfield = (parray 3 pnonwhite |>> String.ofArray) .>> pchar ':' .>>. pword
 
-    let ppassport =
-        sepEndBy1 pfield (pchar ' ' <|> pchar '\n')
+    let ppassport = sepEndBy1 pfield (pchar ' ' <|> pchar '\n')
 
     sepEndBy1 ppassport (pchar '\n')
 
@@ -46,28 +40,18 @@ let fieldValid (field: string, value: string) =
     | "eyr" -> validRange value (2020, 2030)
     | "hgt" -> validHeight value
     | "hcl" -> Regex.IsMatch(value, "^#[0-9a-f]{6}$")
-    | "ecl" ->
-        [ "amb"
-          "blu"
-          "brn"
-          "gry"
-          "grn"
-          "hzl"
-          "oth" ]
-        |> List.contains value
+    | "ecl" -> [ "amb"; "blu"; "brn"; "gry"; "grn"; "hzl"; "oth" ] |> List.contains value
     | "pid" -> Regex.IsMatch(value, "^[0-9]{9}$")
     | "cid" -> true
     | _ -> false
 
 let isValidHard fields =
-    isValidEasy fields
-    && (fields |> List.forall fieldValid)
+    isValidEasy fields && (fields |> List.forall fieldValid)
 
 let solve validator input =
     input |> List.filter validator |> length
 
-let solution =
-    makeSolution parser (solve isValidEasy) (solve isValidHard)
+let solution = makeSolution () parser (solve isValidEasy) (solve isValidHard)
 
 module Tests =
     open Xunit

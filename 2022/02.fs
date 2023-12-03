@@ -10,10 +10,14 @@ type Play =
 
 let parser =
     let p1 =
-        choice [ (pchar 'A' >>% Rock); (pchar 'B' >>% Paper); (pchar 'C' >>% Scissors) ]
+        choice [ (pchar 'A' >>% Rock)
+                 (pchar 'B' >>% Paper)
+                 (pchar 'C' >>% Scissors) ]
 
     let p2 =
-        choice [ (pchar 'X' >>% Rock); (pchar 'Y' >>% Paper); (pchar 'Z' >>% Scissors) ]
+        choice [ (pchar 'X' >>% Rock)
+                 (pchar 'Y' >>% Paper)
+                 (pchar 'Z' >>% Scissors) ]
 
     sepEndBy1 (p1 .>> (pchar ' ') .>>. p2) (pchar '\n')
 
@@ -49,7 +53,7 @@ let solve2 input =
 
     input |> List.map (fun (l, r) -> (l, selectPlay (l, r))) |> solve1
 
-let solution = makeSolution parser (solve1) (solve2)
+let solution = makeSolution () parser (solve1) (solve2)
 
 module Tests =
     open Xunit

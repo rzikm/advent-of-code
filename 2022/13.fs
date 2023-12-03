@@ -44,7 +44,7 @@ let solve2 input =
     |> List.choosei (fun i t -> if List.contains t dividers then Some(i + 1) else None)
     |> List.reduce (*)
 
-let solution = makeSolution parser solve1 solve2
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit
