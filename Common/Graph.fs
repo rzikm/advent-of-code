@@ -3,14 +3,14 @@
 open System.Collections.Generic
 
 let inline aStar
-    (fHeuristic: 'vertex -> ^cost)
-    (fNeighbors: 'vertex -> ('vertex * ^cost) seq)
+    (fHeuristic: 'vertex -> int32)
+    (fNeighbors: 'vertex -> ('vertex * int32) seq)
     (fFinish: 'vertex -> bool)
     (startVertices: 'vertex list)
     =
 
-    let preds = Dictionary<'vertex, 'cost * 'vertex>()
-    let fringe = PriorityQueue<'cost * 'vertex * 'vertex, 'cost>()
+    let preds = Dictionary<'vertex, int32 * 'vertex>()
+    let fringe = PriorityQueue<int32 * 'vertex * 'vertex, int32>()
     let starts = Set.ofList startVertices
 
     let addNeighbor v (n, nCost) =
@@ -49,13 +49,13 @@ let inline aStar
     doSearch ()
 
 let shortestPaths
-    (fNeighbors: 'vertex -> ('vertex * ^cost) seq)
+    (fNeighbors: 'vertex -> ('vertex * int32) seq)
     (start: 'vertex)
     (ends: 'vertex list)
     =
 
-    let preds = Dictionary<'vertex, 'cost * 'vertex>()
-    let fringe = PriorityQueue<'cost * 'vertex * 'vertex, 'cost>()
+    let preds = Dictionary<'vertex, int32 * 'vertex>()
+    let fringe = PriorityQueue<int32 * 'vertex * 'vertex, int32>()
 
     let addNeighbor v (n, nCost) =
         match preds.TryGetValue n with
