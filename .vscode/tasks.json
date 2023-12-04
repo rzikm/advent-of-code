@@ -45,12 +45,12 @@
             "args": [
                 "test",
                 "--filter",
-                "AoC202223",
+                "AoC202304",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary",
             ],
             "options": {
-                "cwd": "${workspaceFolder}/2022",
+                "cwd": "${workspaceFolder}/2023",
                 "env": {
                     "VSTEST_HOST_DEBUG": "1"
                 }

@@ -37,17 +37,13 @@ let parser =
 let isAdjacentToSymbol (n, (r, c, c2)) (c, (r', c')) =
     abs (r - r') <= 1L && (c - 1L <= c' && c' <= c2 + 1L)
 
-let adjacentNumbers numbers c =
-    numbers |> List.filter (fun n -> isAdjacentToSymbol n c)
-
 let solve1 (input: Input) =
     input.numbers |> List.filter (fun n -> List.exists (isAdjacentToSymbol n) input.symbols) |> List.sumBy fst
 
 let solve2 (input: Input) =
-
     input.symbols
     |> List.filter (fst >> (=) '*')
-    |> List.map (adjacentNumbers input.numbers)
+    |> List.map (fun c -> List.filter (fun n -> isAdjacentToSymbol n c) input.numbers)
     |> List.filter (List.length >> (=) 2)
     |> List.sumBy (List.map fst >> List.reduce (*))
 
