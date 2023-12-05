@@ -26,6 +26,12 @@ let diff value sub =
     }
     |> List.ofSeq
 
+let diffMany values subs =
+    let folder values sub =
+        values |> List.collect (fun v -> diff v sub)
+
+    subs |> List.fold folder values
+
 let unionMany list =
     let rec loop acc =
         function
