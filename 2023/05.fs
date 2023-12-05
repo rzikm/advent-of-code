@@ -27,48 +27,35 @@ let transformSeed map seed =
 let solve1 (seeds, maps) =
     maps |> List.fold (fun seeds map -> seeds |> List.map (transformSeed map)) seeds |> List.min
 
-let transformSeedRange map (start, count) =
-    let rec loop acc (start, count) maps =
-        if (count = 0L) then
+let transformSeedRange map (start, stop) =
+    let rec loop acc (start, stop) maps =
+        if (start > stop) then
             acc
         else
             match maps with
-            | [] -> acc @ [ (start, count) ]
+            | [] -> acc @ [ (start, stop) ]
             | (dstStart, srcStart, len) :: rest ->
                 let cmnStart = max srcStart start
-                let cmnEnd = min (srcStart + len) (start + count)
+                let cmnEnd = min (srcStart + len - 1L) stop
 
                 if start < srcStart then
-                    let nlen = min count (srcStart - start)
-                    loop ((start, nlen) :: acc) (srcStart, count - nlen) ((dstStart, srcStart, len) :: rest)
-                else if cmnStart < cmnEnd then
-                    let cmnLen = cmnEnd - cmnStart
-                    loop ((dstStart - srcStart + cmnStart, cmnLen) :: acc) (cmnEnd, count - cmnLen) rest
+                    let nstop = min stop (srcStart - 1L)
+                    loop ((start, nstop) :: acc) (srcStart, stop) ((dstStart, srcStart, len) :: rest)
+                else if cmnStart <= cmnEnd then
+                    let delta = dstStart - srcStart
+                    loop ((cmnStart + delta, cmnEnd + delta) :: acc) (cmnEnd + 1L, stop) rest
                 else
-                    loop acc (start, count) rest
+                    loop acc (start, stop) rest
 
-    loop [] (start, count) (snd map)
-
-let merge list =
-    let rec loop =
-        function
-        | [] -> []
-        | [ x ] -> [ x ]
-        | (start1, count1) :: (start2, count2) :: rest ->
-            if start1 + count1 >= start2 then
-                let count = max (start2 - start1 + count2) count1
-                loop ((start1, count) :: rest)
-            else
-                (start1, count1) :: loop ((start2, count2) :: rest)
-
-    List.sortBy fst list |> loop
+    loop [] (start, stop) (snd map)
 
 let solve2 input =
-    let inRanges = fst input |> List.chunkBySize 2 |> List.map (fun [ a; b ] -> (a, b))
+    let inRanges =
+        fst input |> List.chunkBySize 2 |> List.map (fun [ a; b ] -> (a, a + b - 1L))
 
     input
     |> snd
-    |> List.fold (fun ranges map -> List.collect (transformSeedRange map) ranges |> merge) inRanges
+    |> List.fold (fun ranges map -> List.collect (transformSeedRange map) ranges |> Range.mergeList) inRanges
     |> List.map fst
     |> List.min
 
@@ -120,42 +107,38 @@ module Tests =
 
     [<Fact>]
     let ``Example part 2 - first level`` () =
-        let inRanges = [ (79L, 14L); (55L, 13L) ]
+        let inRanges = [ (79L, 92L); (55L, 67L) ]
         let map = ("", [ (52L, 50L, 48L); (50L, 98L, 2L) ])
 
         [ map ]
-        |> List.fold (fun ranges map -> List.collect (transformSeedRange map) ranges |> merge) inRanges
-        |> should equal [ (57L, 13L); (81L, 14L) ]
+        |> List.fold (fun ranges map -> List.collect (transformSeedRange map) ranges |> Range.mergeList) inRanges
+        |> should equal [ (57L, 69L); (81L, 94L) ]
 
     [<Fact>]
     let ``Example part 2 - split`` () =
         let map = ("", [ (52L, 50L, 48L); (50L, 98L, 2L) ])
-        transformSeedRange map (96L, 4L) |> merge |> should equal [ (50L, 2L); (98L, 2L) ]
+        transformSeedRange map (96L, 99L) |> Range.mergeList |> should equal [ (50L, 51L); (98L, 99L) ]
 
     [<Fact>]
     let ``Example part 2 - skip range`` () =
         let map = ("", [ (52L, 10L, 48L); (50L, 98L, 2L) ])
-        transformSeedRange map (96L, 4L) |> merge |> should equal [ (50L, 2L); (96L, 2L) ]
+        transformSeedRange map (96L, 99L) |> Range.mergeList |> should equal [ (50L, 51L); (96L, 97L) ]
 
     [<Fact>]
-    let ``Merge ranges`` () =
-        merge [ (1L, 2L)
-                (3L, 4L)
-                (7L, 2L)
-                (9L, 1L) ]
-        |> should equal [ (1L, 9L) ]
+    let ``Merge touching`` () =
+        Range.mergeList [ (1L, 2L); (3L, 4L) ] |> should equal [ (1L, 4L) ]
 
     [<Fact>]
     let ``Merge overlapping`` () =
-        merge [ (1L, 5L); (3L, 4L) ] |> should equal [ (1L, 6L) ]
+        Range.mergeList [ (1L, 5L); (3L, 6L) ] |> should equal [ (1L, 6L) ]
 
     [<Fact>]
     let ``Merge subset `` () =
-        merge [ (1L, 10L); (3L, 4L) ] |> should equal [ (1L, 10L) ]
+        Range.mergeList [ (1L, 10L); (3L, 4L) ] |> should equal [ (1L, 10L) ]
 
     [<Fact>]
     let ``Merge longer `` () =
-        merge [ (1L, 2L); (1L, 10L) ] |> should equal [ (1L, 10L) ]
+        Range.mergeList [ (1L, 2L); (1L, 10L) ] |> should equal [ (1L, 10L) ]
 
     [<Theory>]
     [<InlineData(79L, "79 81 81 81 74 78 78 82")>]
@@ -166,7 +149,9 @@ module Tests =
         let (_, maps) = parseTestInput parser input
 
         maps
-        |> List.scan (fun ranges map -> List.collect (transformSeedRange map) ranges |> merge) [ (seed, 1L) ]
+        |> List.scan
+            (fun ranges map -> List.collect (transformSeedRange map) ranges |> Range.mergeList)
+            [ (seed, seed) ]
         |> List.collect (List.map fst)
         |> should equal (steps |> String.split [ " " ] |> List.ofSeq |> List.map int64)
 
