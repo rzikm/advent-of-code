@@ -14,19 +14,6 @@ let parser =
 
     seeds .>>. sepEndBy1 map (pchar '\n')
 
-let transformSeed map seed =
-    map
-    |> snd
-    |> List.tryPick (fun (dstStart, srcStart, len) ->
-        if srcStart <= seed && seed < srcStart + len then
-            Some(dstStart + seed - srcStart)
-        else
-            None)
-    |> Option.defaultValue seed
-
-let solve1 (seeds, maps) =
-    maps |> List.fold (fun seeds map -> seeds |> List.map (transformSeed map)) seeds |> List.min
-
 let transformSeedRange map (start, stop) =
     let rec loop acc (start, stop) maps =
         if (start > stop) then
@@ -49,15 +36,22 @@ let transformSeedRange map (start, stop) =
 
     loop [] (start, stop) (snd map)
 
-let solve2 input =
-    let inRanges =
-        fst input |> List.chunkBySize 2 |> List.map (fun [ a; b ] -> (a, a + b - 1L))
+let solve preprocess input =
+    let inRanges = preprocess input
 
     input
     |> snd
     |> List.fold (fun ranges map -> List.collect (transformSeedRange map) ranges |> Range.mergeList) inRanges
     |> List.map fst
     |> List.min
+
+let solve1 input =
+    solve (fst >> List.map (fun s -> (s, s))) input
+
+#nowarn "25"
+
+let solve2 input =
+    solve (fst >> List.chunkBySize 2 >> List.map (fun [ a; b ] -> (a, a + b - 1L))) input
 
 let solution = makeSolution () parser solve1 solve2
 
@@ -154,13 +148,6 @@ module Tests =
             [ (seed, seed) ]
         |> List.collect (List.map fst)
         |> should equal (steps |> String.split [ " " ] |> List.ofSeq |> List.map int64)
-
-    [<Fact>]
-    let ``Example part 1 - using part 2`` () =
-        let (seeds, maps) = parseTestInput parser input
-        let seeds = seeds |> List.collect (fun s -> [ s; 1L ])
-
-        solve2 (seeds, maps) |> should equal 35L
 
     [<Fact>]
     let ``Example part 2`` () =
