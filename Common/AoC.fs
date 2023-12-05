@@ -24,7 +24,7 @@ let makeSolution
       solve2 = fun input -> (solve2 (downcast input)) :> Object }
 
 let parseTestInput parser input =
-    match runParserOnString parser () (String.concat "\n" input) "input" with
+    match runParserOnString parser () "input" (String.concat "\n" input) with
     | Success (res, _, _) -> res
     | Failure (err, _, _) -> failwith err
 
