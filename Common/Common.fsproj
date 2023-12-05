@@ -9,6 +9,7 @@
     <Compile Include="AoC.fs" />
     <Compile Include="Tuple2.fs" />
     <Compile Include="Tuple3.fs" />
+    <Compile Include="Option.fs" />
     <Compile Include="List.fs" />
     <Compile Include="Array.fs" />
     <Compile Include="Range.fs" />

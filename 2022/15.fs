@@ -24,7 +24,7 @@ let coveredIntervalsOnRow input row =
         else
             let dx = dist - dy
             Some(sx - dx, sx + dx))
-    |> Utils.unionIntervals
+    |> Range.unionMany
 
 let solve1 row input =
     let beaconsOnRow =
