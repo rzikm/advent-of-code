@@ -3,7 +3,6 @@ module AoC202013
 open AdventOfCode
 open FSharpPlus
 open FParsec
-open Utils
 
 let parser =
     pint64 .>> skipRestOfLine true .>>. sepBy ((pint64 |>> Some) <|> (pchar 'x' >>% None)) (pchar ',')
@@ -24,7 +23,7 @@ let hard (_, busses) =
         match busses with
         | [] -> time
         | (offset, period) :: rest ->
-            let largePeriod = lcm processed
+            let largePeriod = Math.lcm processed
             // find d such that
             //    time + d * largePeriod + offset == 0                     (mod period)
             // which means
@@ -33,7 +32,7 @@ let hard (_, busses) =
             // -> d = -(time + offset) * largeOffset^-1 (mod period)
 
             let d =
-                multmod (negmod (time + offset) period) (multinvmod largePeriod period) period
+                Math.multmod (Math.negmod (time + offset) period) (Math.multinvmod largePeriod period) period
 
             let newTime = time + d * largePeriod
             f newTime (period :: processed) rest

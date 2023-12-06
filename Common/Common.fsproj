@@ -13,6 +13,7 @@
     <Compile Include="List.fs" />
     <Compile Include="Array.fs" />
     <Compile Include="Range.fs" />
+    <Compile Include="Math.fs" />
     <Compile Include="String.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="Graph.fs" />

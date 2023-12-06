@@ -2,7 +2,6 @@ module AoC202025
 
 open AdventOfCode
 open FParsec
-open Utils
 
 let parser = pint64 .>> spaces .>>. pint64
 
@@ -15,10 +14,10 @@ let getEncryptionKey cardPublic doorPublic =
     // key = 7^(cd) mod 20201227
 
     // find out factors c and d
-    let c = discreteLog cardPublic 7L m
-    let d = discreteLog doorPublic 7L m
+    let c = Math.discreteLog cardPublic 7L m
+    let d = Math.discreteLog doorPublic 7L m
 
-    powmod 7L (c * d) m
+    Math.powmod 7L (c * d) m
 
 let solution =
     makeSolution () parser (fun i -> i ||> getEncryptionKey) (fun _ -> "*")
@@ -29,11 +28,11 @@ module Tests =
 
     [<Fact>]
     let ``Get card loop size`` () =
-        discreteLog 5764801L 7L m |> should equal 8L
+        Math.discreteLog 5764801L 7L m |> should equal 8L
 
     [<Fact>]
     let ``Get door loop size`` () =
-        discreteLog 17807724L 7L m |> should equal 11L
+        Math.discreteLog 17807724L 7L m |> should equal 11L
 
     [<Fact>]
     let ``Break example encryption`` () =

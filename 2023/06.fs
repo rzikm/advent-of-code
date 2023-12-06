@@ -18,14 +18,8 @@ let winningRange (time, distance) =
     //     (time - x) * x > distance
     // which is equivalent to
     //     x^2 - time * x + distance < 0
-
-    let time = double time
-    let distance = double distance
-
-    let discriminant = time * time - 4.0 * distance
-
-    let x1 = (time - sqrt discriminant) / 2.0
-    let x2 = (time + sqrt discriminant) / 2.0
+    let (x1, x2) =
+        Math.solveQuadraticEquation 1.0 (-double time) (double distance) |> Option.get
 
     // range repr is [begin, end)
     (floor x1 + 1.0 |> int64), ceil x2 |> int64
@@ -40,7 +34,6 @@ let solve2 input =
     |> Tuple2.map int64
     |> winningRange
     |> Range.length
-
 
 let solution = makeSolution () parser solve1 solve2
 
