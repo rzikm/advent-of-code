@@ -2,6 +2,9 @@ module Range
 
 let inline create start count = (start, start + count)
 
+let inline length (start, stop) =
+    max LanguagePrimitives.GenericZero (stop - start)
+
 let tryIntersect (start1, stop1) (start2, stop2) =
     let start = max start1 start2
     let stop = min stop1 stop2
@@ -25,6 +28,8 @@ let diff value sub =
         if (s2 < x2) then yield (s2, x2)
     }
     |> List.ofSeq
+
+let xor value sub = diff value sub @ diff sub value
 
 let diffMany values subs =
     let folder values sub =
