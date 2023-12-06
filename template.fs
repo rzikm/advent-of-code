@@ -6,7 +6,7 @@ open FParsec
 
 let parser = pint32
 
-let solve1 input = 0
+let solve1 input = input
 
 let solve2 input = 0
 

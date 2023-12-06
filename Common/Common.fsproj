@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="argu" Version="6.1.1" />
     <PackageReference Include="FParsec" Version="1.1.1" />
     <PackageReference Include="FSharpPlus" Version="1.2.5" />
     <PackageReference Include="FsUnit" Version="4.1.0" />

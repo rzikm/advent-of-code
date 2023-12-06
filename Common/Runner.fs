@@ -1,8 +1,19 @@
 module Runner
 
+open Argu
 open System
 open FSharpPlus
 open AdventOfCode
+
+type Arguments =
+    | [<MainCommand>] Day of int list
+    | [<Unique; AltCommandLine("-s")>] Submit of int
+
+    interface IArgParserTemplate with
+        member s.Usage =
+            match s with
+            | Day _ -> "Day which to run"
+            | Submit _ -> "Submit solution for part specified part. Requires a single day to be specified"
 
 let parseArgs (args: string []) =
     match args with
@@ -28,20 +39,20 @@ let getSolution classPrefix (day: int) =
             match me with
             | :? System.Reflection.PropertyInfo as fi ->
                 let solution: Solution = downcast fi.GetMethod.Invoke(null, null)
-                Ok(day, solution)
+                Ok(solution)
             | _ -> Error $"{className}.solution is not a property")
 
 let runWithStopwatch func arg =
-    let sw = System.Diagnostics.Stopwatch.StartNew()
+    let sw = Diagnostics.Stopwatch.StartNew()
     let res = func arg
-    let elapsed = sw.ElapsedMilliseconds
+    let elapsed = sw.Elapsed.TotalMilliseconds
     (res, elapsed)
 
 let private httpClient =
     let sessionFile = "../session"
 
     if not <| IO.File.Exists sessionFile then
-        raise (new Exception("Neither the input file or the session file does not exist"))
+        raise (new Exception("The session file does not exist"))
 
     let session = IO.File.ReadAllText sessionFile
     let handler = new Net.Http.HttpClientHandler()
@@ -63,10 +74,69 @@ let downloadInput year day =
 
     IO.File.WriteAllBytes($"in/{day:D2}.in", bytes)
 
-let runSolution year (day: int, solution: Solution) =
+let submitResult year day part result =
+    try
+        let response =
+            httpClient
+                .PostAsync(
+                    $"https://adventofcode.com/{year}/day/{day}/answer",
+                    new Net.Http.FormUrlEncodedContent(
+                        Map.ofList [ ("level", part.ToString())
+                                     ("answer", result.ToString()) ]
+                    )
+                )
+                .Result
+
+        response.EnsureSuccessStatusCode() |> ignore
+        let body = response.Content.ReadAsStringAsync().Result
+
+        Text
+            .RegularExpressions
+            .Regex
+            .Match(
+                body,
+                ".*<article><p>([^<]*[.!?])*",
+                Text.RegularExpressions.RegexOptions.Singleline
+            )
+            .Groups.[1]
+            .Value
+        |> printfn "%s"
+    with
+    | e -> printfn "Error submitting result: %s" e.Message
+
+type PartResult = { Part: int; Time: double; Result: Result<obj, string> }
+type RunResult = { ParsingTime: double; Parts: PartResult list }
+
+let printResult day (result: Result<RunResult, string>) =
+    match result with
+    | Ok (result) ->
+        printfn "Day %d (parsed in %.2f ms):" day result.ParsingTime
+
+        result.Parts
+        |> List.iter (fun part ->
+            printf "   Part %d (%.2f ms): " part.Part part.Time
+
+            match part.Result with
+            | Ok res -> printfn "%O" res
+            | Error err -> printfn "Error: %s" err)
+    | Error err -> printfn "Day %d Error: %s" day err
+
+
+let runSolutionPart part solution input =
+    try
+        if part = 1 then
+            Ok(solution.solve1 input)
+        else
+            Ok(solution.solve2 input)
+    with
+    | e -> Error(e.Message)
+
+let runSolution year day parts =
     let filename = $"in/{day:D2}.in"
 
     try
+        let solution = getSolution $"AoC{year}" day |> Result.get
+
         if not <| IO.File.Exists filename then
             downloadInput year day
 
@@ -77,32 +147,58 @@ let runSolution year (day: int, solution: Solution) =
             r |> Result.map (fun r -> r, t)
 
         res
-        >>= (fun (input, time) ->
-            let easy = runWithStopwatch solution.solve1 input
-            let hard = runWithStopwatch solution.solve2 input
-            Ok(time, easy, hard))
+        |> Result.map (fun (input, time) ->
+            { ParsingTime = time
+              Parts =
+                parts
+                |> List.map (fun part ->
+                    let (result, time) = runWithStopwatch (runSolutionPart part solution) input
+                    { Part = part; Time = time; Result = result })
+
+            })
     with
     | ex -> Error(ex.Message)
 
 let run year args =
-    let res =
-        args |> parseArgs |> Result.map (Seq.map (fun d -> d, getSolution $"AoC{year}" d >>= runSolution year))
+    let parser = ArgumentParser.Create<Arguments>()
 
-    let print (day, result) =
+    try
+        let results = parser.Parse args
 
-        match result with
-        | Ok (time, (r1, t1), (r2, t2)) ->
-            printfn "Day %d (parsed in %d ms):" day time
-            printfn "   Part 1: %O (%d ms)" r1 t1
-            printfn "   Part 2: %O (%d ms)" r2 t2
-        | Error err ->
-            printfn "Day %d" day
-            printfn "   %s" err
+        let days =
+            results.PostProcessResults(
+                <@ Day @>,
+                List.map (fun i -> if i < 0 || i > 25 then failwith "Invalid day" else i)
+            )
+            |> List.tryHead
+            |> Option.defaultValue [ 1..25 ]
 
-    match res with
-    | Ok l ->
-        Seq.iter print l
+        let submit =
+            results.PostProcessResults(
+                <@ Submit @>,
+                (fun i ->
+                    if List.length days <> 1 then
+                        failwith "In order to submit, a single day must be specified"
+
+                    if i < 0 || i > 2 then failwith "Invalid part" else i)
+            )
+            |> List.tryHead
+
+        match submit with
+        | Some part ->
+            let day = List.head days
+            let result = runSolution year day [ part ]
+            printResult day result
+
+            match result with
+            | Ok ({ Parts = [ { Result = Ok (res) } ] }) -> submitResult year day part res
+            | _ -> printfn "Nothing to submit"
+
+        | None -> days |> List.iter (fun day -> runSolution year day [ 1; 2 ] |> printResult day)
+
         0
-    | Error s ->
-        printfn "%s" s
+
+    with
+    | e ->
+        printfn "%s" e.Message
         1

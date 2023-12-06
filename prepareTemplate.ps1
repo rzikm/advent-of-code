@@ -4,6 +4,9 @@ param(
     [int] $Year
 )
 
+mkdir "$PSScriptRoot\$Year"
+mkdir "$PSScriptRoot\$Year\in"
+
 $template = (Get-Content -Path $PSScriptRoot\template.fs) -replace "YYYY", "$Year"
 
 1..25 | ForEach-Object {
