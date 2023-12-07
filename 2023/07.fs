@@ -10,7 +10,7 @@ let parser =
     let hand = parray 5 (anyOf "23456789TJQKA") |>> List.ofArray .>> spaces .>>. pint32
     sepEndBy1 hand (skipChar '\n')
 
-let cardToStrengthEasy =
+let cardToStrength =
     function
     | c when isDigit c -> int c - int '0'
     | 'T' -> 10
@@ -20,23 +20,15 @@ let cardToStrengthEasy =
     | 'A' -> 14
     | _ -> failwith "invalid card"
 
-let cardToStrengthHard =
+let cardToStrengthWithWildcard =
     function
     | 'J' -> 1
-    | c -> cardToStrengthEasy c
+    | c -> cardToStrength c
 
-let handToStrengthEasy cards =
-    match List.countBy id cards |> List.sortByDescending snd |> List.map snd with
-    | [ 5 ] -> 7
-    | [ 4; 1 ] -> 6
-    | [ 3; 2 ] -> 5
-    | [ 3; 1; 1 ] -> 4
-    | [ 2; 2; 1 ] -> 3
-    | [ 2; 1; 1; 1 ] -> 2
-    | [ 1; 1; 1; 1; 1 ] -> 1
-    | _ -> failwith "invalid hand"
+let getCardCounts cards =
+    List.countBy id cards |> List.sortByDescending snd |> List.map snd
 
-let handToStrengthHard cards =
+let getCardCountsWithWildcard cards =
     // replace jokers with most frequent card
     let mostFrequent =
         cards
@@ -45,16 +37,17 @@ let handToStrengthHard cards =
         |> List.sortByDescending snd
         |> List.map fst
         |> List.tryHead
-        |> Option.defaultValue 1
+        |> Option.defaultValue 1 // to cover the case with all joker cards
 
-    cards |> setl (_all 1) mostFrequent |> handToStrengthEasy
+    cards |> setl (_all 1) mostFrequent |> getCardCounts
 
-let compareHands strengthFun cards1 cards2 =
-    let strength1 = strengthFun cards1
-    let strength2 = strengthFun cards2
+let compareHands cardCountsFun cards1 cards2 =
+    let counts1 = cardCountsFun cards1
+    let counts2 = cardCountsFun cards2
 
-    if strength1 <> strength2 then
-        compare strength1 strength2
+    if counts1 <> counts2 then
+        // lexical ordering works here to determine a better hand
+        compare counts1 counts2
     else
         compare cards1 cards2
 
@@ -65,8 +58,8 @@ let solve cardToStr handToStr input =
     |> List.indexed
     |> List.sumBy (fun (rankMinus1, (_, bid)) -> (rankMinus1 + 1) * bid)
 
-let solve1 = solve cardToStrengthEasy handToStrengthEasy
-let solve2 = solve cardToStrengthHard handToStrengthHard
+let solve1 = solve cardToStrength getCardCounts
+let solve2 = solve cardToStrengthWithWildcard getCardCountsWithWildcard
 
 let solution = makeSolution () parser solve1 solve2
 
@@ -85,12 +78,7 @@ module Tests =
         testPart2 solution input |> should equal 5905
 
     [<Theory>]
-    [<InlineData(12, 12, 12, 1, 14, 6)>]
-    let ``Example part 2 - calc rank`` c1 c2 c3 c4 c5 strength =
-        [ c1; c2; c3; c4; c5 ] |> handToStrengthHard |> should equal strength
-
-    [<Theory>]
     [<InlineData("JKKK2", "QQQQ2")>]
     let ``Part2 - Compare hands joker rule`` less great =
-        let toCards = List.ofSeq >> List.map cardToStrengthHard
-        compareHands handToStrengthHard (toCards less) (toCards great) |> should equal -1
+        let toCards = List.ofSeq >> List.map cardToStrengthWithWildcard
+        compareHands getCardCountsWithWildcard (toCards less) (toCards great) |> should equal -1
