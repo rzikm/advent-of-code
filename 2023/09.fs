@@ -4,21 +4,17 @@ open AdventOfCode
 open FSharpPlus
 open FParsec
 
-let parser =
-    let seq = sepBy1 pint32 (skipChar ' ')
-    sepEndBy1 seq (skipChar '\n')
+let parser = sepEndBy1 (sepBy1 pint32 (skipChar ' ')) (skipChar '\n')
 
-let computeNextInSeq seq =
-    let unfolder seq =
-        List.tryFind ((<>) 0) seq // continue until all zeros
-        |> Option.map (fun _ -> List.last seq, List.pairwise seq |> List.map (fun (a, b) -> b - a))
+let computeNextInSeq =
+    List.unfold (fun s ->
+        List.tryFind ((<>) 0) s |> Option.map (fun _ -> List.last s, List.pairwise s |> List.map (fun (a, b) -> b - a)))
+    >> List.sum
 
-    List.unfold unfolder seq |> List.rev |> List.scan (+) 0 |> List.last
+let solve1 input = input |> List.sumBy computeNextInSeq
 
-let solve1 input =
-    input |> List.map computeNextInSeq |> List.sum
-
-let solve2 input = input |> List.map List.rev |> solve1
+let solve2 input =
+    input |> List.sumBy (List.rev >> computeNextInSeq)
 
 let solution = makeSolution () parser solve1 solve2
 
