@@ -74,7 +74,7 @@ let shortestPaths
             | true, (_, x) -> finalPath x (v :: tail)
 
     let rec doSearch ends acc =
-        if ends = [] then acc
+        if ends = [] || fringe.Count = 0 then acc
         else
             let (vCost, v, from) = fringe.Dequeue()
 
