@@ -7,8 +7,12 @@ let mapAt i f array =
 
 let item2d x y array = array |> Array.item y |> Array.item x
 
+let item2dp (x, y) array = item2d x y array
+
 let tryItem2d x y array =
     array |> Array.tryItem y |> Option.bind (Array.tryItem x)
+
+let tryItem2dp (x, y) array = tryItem2d x y array
 
 let neighbors2d8 x y array =
     Tuple2.neighbors8 (x, y) |> Seq.choose (fun (x, y) -> tryItem2d x y array)
