@@ -21,29 +21,40 @@ let getGalaxyIndexes input =
         row |> Seq.indexed |> Seq.filter (snd >> (=) Galaxy) |> Seq.map (fun (x, _) -> (x, y)))
     |> List.ofSeq
 
-let measureDistance expRow expCol expandIndex input (x1, y1) (x2, y2) =
-    let dy =
-        [ (min y1 y2) .. (max y1 y2) ] |> List.sumBy (fun y -> if expRow y then expandIndex else 1L)
+let getExpansions input =
+    let rows =
+        input
+        |> Seq.indexed
+        |> Seq.filter (fun (y, row) -> not <| Array.contains Galaxy row)
+        |> Seq.map fst
+        |> List.ofSeq
+
+    let columns =
+        [ 0 .. ((Array.item 0 input |> Array.length) - 1) ]
+        |> List.filter (fun col -> not <| Array.exists (Array.item col >> (=) Galaxy) input)
+        |> List.ofSeq
+
+    rows, columns
+
+let measureDistance expRow expCol expandIndex (x1, y1) (x2, y2) =
+    let (minx, miny) = (min x1 x2, min y1 y2)
+    let (maxx, maxy) = (max x1 x2, max y1 y2)
 
     let dx =
-        [ (min x1 x2) .. (max x1 x2) ] |> List.sumBy (fun x -> if expCol x then expandIndex else 1L)
+        int64 (maxx - minx) + (expandIndex - 1L) * (List.count (fun i -> minx < i && i < maxx) expCol |> int64)
 
-    dx + dy - 2L
+    let dy =
+        int64 (maxy - miny) + (expandIndex - 1L) * (List.count (fun i -> miny < i && i < maxy) expRow |> int64)
 
-let shouldExpRow input =
-    Utils.memoize (fun row -> input |> Array.item row |> Array.contains Galaxy |> not)
-
-let shouldExpCol input =
-    Utils.memoize (fun col -> input |> Array.exists (Array.item col >> (=) Galaxy) |> not)
+    dx + dy
 
 let solve dist input =
     let galaxies = getGalaxyIndexes input
-    let shouldExpRow = shouldExpRow input
-    let shouldExpCol = shouldExpCol input
+    let expRow, expCol = getExpansions input
 
     List.allPairs galaxies galaxies
     |> List.filter (uncurry (<))
-    |> List.sumBy (fun (l, r) -> measureDistance shouldExpRow shouldExpCol dist input l r)
+    |> List.sumBy (fun (l, r) -> measureDistance expRow expCol dist l r)
 
 let solution = makeSolution () parser (solve 2L) (solve 1000000L)
 
@@ -73,10 +84,10 @@ module Tests =
     [<InlineData(0, 9, 4, 9, 5)>]
     let ``Example part 1 - concrete pair`` x1 y1 x2 y2 dist =
         let input = parseTestInput parser input
-        let shouldExpRow = shouldExpRow input
-        let shouldExpCol = shouldExpCol input
-        measureDistance shouldExpRow shouldExpCol 2 input (x1, y1) (x2, y2) |> should equal (int64 dist)
-        measureDistance shouldExpRow shouldExpCol 2 input (x2, y2) (x1, y1) |> should equal (int64 dist)
+        let expRow, expCol = getExpansions input
+
+        measureDistance expRow expCol 2 (x1, y1) (x2, y2) |> should equal (int64 dist)
+        measureDistance expRow expCol 2 (x2, y2) (x1, y1) |> should equal (int64 dist)
 
     [<Fact>]
     let ``Example part 2`` () =
