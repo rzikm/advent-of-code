@@ -6,7 +6,7 @@ open FParsec
 
 let parser = pint32
 
-let solve1 input = input
+let solve1 input = 0
 
 let solve2 input = 0
 
@@ -18,10 +18,10 @@ module Tests =
 
     let input = [| "" |]
 
-// [<Fact>]
-// let ``Example part 1`` () =
-//     testPart1 solution input |> should equal 0
+    [<Fact>]
+    let ``Example part 1`` () =
+        testPart1 solution input |> should equal 0
 
-// [<Fact>]
-// let ``Example part 2`` () =
-//     testPart2 solution input |> should equal 0
+//     [<Fact>]
+//     let ``Example part 2`` () =
+//         testPart2 solution input |> should equal 0
