@@ -65,6 +65,19 @@ let memoizerec f =
 
     newf
 
+let memoize f =
+    let cache = new System.Collections.Generic.Dictionary<_, _>()
+
+    let getValue value =
+        match cache.TryGetValue value with
+        | true, res -> res
+        | false, _ ->
+            let res = f value
+            cache.Add(value, res)
+            res
+
+    getValue
+
 let parseInput parser input =
     match FParsec.CharParsers.run parser (String.concat "\n" input) with
     | Success (res, _, _) -> res

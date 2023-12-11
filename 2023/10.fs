@@ -4,8 +4,7 @@ open AdventOfCode
 open FSharpPlus
 open FParsec
 
-let parser =
-    sepEndBy1 (many1 (anyOf "|-LJ7F.S") |>> Array.ofList) (skipChar '\n') |>> Array.ofList
+let parser = ParseUtils.grid (anyOf "|-LJ7F.S")
 
 type Dir =
     | Up
