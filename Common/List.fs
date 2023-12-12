@@ -8,4 +8,8 @@ let rotate count list =
 
 let count predicate list =
     List.fold (fun count item -> if predicate item then count + 1 else count) 0 list
-    
+
+let trySkip count list =
+    match List.length list >= count with
+    | true -> Some(List.skip count list)
+    | false -> None

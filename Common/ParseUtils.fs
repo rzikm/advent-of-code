@@ -2,6 +2,8 @@ module ParseUtils
 
 open FParsec
 
+let lines line = sepEndBy1 line (skipChar '\n')
+
 let grid cell =
     let row = many1 cell |>> Array.ofList
-    sepEndBy1 row (skipChar '\n') |>> Array.ofList
+    lines row |>> Array.ofList
