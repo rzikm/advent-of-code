@@ -29,6 +29,15 @@ let neighbors3d26 x y z array =
 let item4d x y z w array =
     array |> Array.item w |> Array.item z |> Array.item y |> Array.item x
 
+let mapAt2dp (x, y) f array = array |> mapAt y (mapAt x f)
+
+let allIndexes2d array =
+    seq {
+        for y in 0 .. Array.length array - 1 do
+            for x in 0 .. (Array.item y array |> Array.length) - 1 do
+                yield x, y
+    }
+
 let tryItem4d x y z w array =
     array
     |> Array.tryItem w

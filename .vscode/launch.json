@@ -16,7 +16,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/2023/bin/Debug/net8.0/2023.dll",
             "args": [
-                "01"
+                "13"
             ],
             "cwd": "${workspaceFolder}/2023",
             "stopAtEntry": false,
