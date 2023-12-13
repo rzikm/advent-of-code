@@ -17,7 +17,8 @@ type Axis =
     | Vertical
 
 let findHorizontalAxes grid =
-    seq { 1 .. Array.length grid - 1 }
+    Array.allIndexes grid
+    |> Seq.skip 1
     |> Seq.filter (fun axis ->
         seq { 0 .. (axis - 1) }
         |> Seq.forall (fun yy ->

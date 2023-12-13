@@ -31,10 +31,12 @@ let item4d x y z w array =
 
 let mapAt2dp (x, y) f array = array |> mapAt y (mapAt x f)
 
+let allIndexes array = seq { 0 .. Array.length array - 1 }
+
 let allIndexes2d array =
     seq {
-        for y in 0 .. Array.length array - 1 do
-            for x in 0 .. (Array.item y array |> Array.length) - 1 do
+        for y in allIndexes array do
+            for x in Array.item y array |> allIndexes do
                 yield x, y
     }
 
