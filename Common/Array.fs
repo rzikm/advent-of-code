@@ -67,22 +67,34 @@ let map2d f array =
 
     init2d lenx leny (fun x y -> f x y (item2d x y array))
 
-let rotate array =
-    // Rotates 2d array clockwise
+let rotate2dClockwise array =
     let leny = Array.length array
     let lenx = Array.item 0 array |> Array.length
 
     init2d leny lenx (fun x y -> item2d y (leny - 1 - x) array)
 
+let rotate2dCounterclockwise array =
+    let leny = Array.length array
+    let lenx = Array.item 0 array |> Array.length
+
+    init2d leny lenx (fun x y -> item2d (lenx - 1 - y) x array)
 
 module Tests =
     open Xunit
     open FsUnit.Xunit
 
     [<Fact>]
-    let ``Array.rotate rotates correctly`` () =
+    let ``Array.rotate2dClockwise rotates correctly`` () =
         let original = [| [| 1; 2; 3 |]; [| 4; 5; 6 |] |]
 
         let expected = [| [| 4; 1 |]; [| 5; 2 |]; [| 6; 3 |] |]
 
-        rotate original |> should equal expected
+        rotate2dClockwise original |> should equal expected
+
+    [<Fact>]
+    let ``Array.rotate2dCounterclockwise rotates correctly`` () =
+        let original = [| [| 1; 2; 3 |]; [| 4; 5; 6 |] |]
+
+        let expected = [| [| 3; 6 |]; [| 2; 5 |]; [| 1; 4 |] |]
+
+        rotate2dClockwise original |> should equal expected

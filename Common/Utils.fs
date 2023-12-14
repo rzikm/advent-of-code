@@ -100,3 +100,25 @@ let constf v _ = v
 let logValue format value =
     Printf.printfn format value
     value
+
+let loopUntilRepeat f start =
+    let rec loop statesToIndex s index =
+        match Map.tryFind s statesToIndex with
+        | Some loopStart -> (s, loopStart, index - loopStart)
+        | None -> loop (Map.add s index statesToIndex) (f s) (index + 1)
+
+    loop Map.empty start 0
+
+let applyNWithRepeatDetection n f start =
+    let rec loop statesToIndex s index =
+        if n = index then
+            s
+        else
+            match Map.tryFind s statesToIndex with
+            | Some loopStart ->
+                let period = index - loopStart
+                let leftover = (n - loopStart) % period
+                applyN leftover f s
+            | None -> loop (Map.add s index statesToIndex) (f s) (index + 1)
+
+    loop Map.empty start 0

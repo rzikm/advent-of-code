@@ -27,7 +27,7 @@ let getEdges tile =
         yield getLeftEdge tile
     }
 
-let rotate (id, data) = (id, Array.rotate data)
+let rotate (id, data) = (id, Array.rotate2dClockwise data)
 
 let flipVertically (id, data) = (id, Array.map Array.rev data)
 
