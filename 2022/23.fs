@@ -119,7 +119,7 @@ module Tests =
     let ``Simple example one step`` () =
         let input = [| "....."; "..##."; "..#.."; "....."; "..##."; "....."; "" |]
 
-        parseInput parser input
+        parseTestInput parser input
         |> doSteps 1
         |> visualize
         |> should
@@ -134,7 +134,7 @@ module Tests =
     let ``Simple example two step`` () =
         let input = [| "....."; "..##."; "..#.."; "....."; "..##."; "....."; "" |]
 
-        parseInput parser input
+        parseTestInput parser input
         |> doSteps 2
         |> visualize
         |> should

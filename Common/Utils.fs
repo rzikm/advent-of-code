@@ -79,7 +79,7 @@ let memoize f =
     getValue
 
 let parseInput parser input =
-    match FParsec.CharParsers.run parser (String.concat "\n" input) with
+    match FParsec.CharParsers.run parser input with
     | Success (res, _, _) -> res
     | Failure (err, _, _) -> failwith err
 

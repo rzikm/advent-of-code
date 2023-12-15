@@ -2,6 +2,8 @@ module Tuple2
 
 open FSharpPlus
 
+let create a b = (a, b)
+
 let map f (i1, i2) = (f i1, f i2)
 let map2 f (x1, x2) (y1, y2) = (f x1 y1, f x2 y2)
 
