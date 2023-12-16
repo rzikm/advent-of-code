@@ -126,24 +126,22 @@ let flood
     (fNeighbors: 'vertex -> ('vertex * int) seq)
     (start: 'vertex )
     =
-    let visited = Dictionary<'vertex, int32>()
+    let visited = HashSet<'vertex>()
     let fringe = PriorityQueue<'vertex, int32>()
 
-    visited.Add(start, 0) |> ignore
+    visited.Add(start) |> ignore
     fringe.Enqueue(start, 0)
 
-    let rec doSearch () =
-        match fringe.TryDequeue () with
-        | true, v, c ->
+    seq {
+        yield (start, 0)
 
+        while fringe.Count > 0 do
+            let _, v, c = fringe.TryDequeue ()
             for (n, cc) in fNeighbors v do
-                match visited.TryAdd(n, c + cc) with
-                | true -> fringe.Enqueue(n, c + cc)
+                match visited.Add(n) with
+                | true ->
+                    fringe.Enqueue(n, c + cc)
+                    yield (n, c + cc)
                 | false -> ()
-
-            doSearch()
-        | false, _, _->
-            Seq.map (fun (p: KeyValuePair<'vertex, int32>) -> p.Key, p.Value) visited |> Seq.toList
-
-    doSearch ()
+    }
 
