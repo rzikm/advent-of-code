@@ -121,3 +121,29 @@ let connectedComponent
             Seq.toList visited
 
     doSearch ()
+
+let flood
+    (fNeighbors: 'vertex -> ('vertex * int) seq)
+    (start: 'vertex )
+    =
+    let visited = Dictionary<'vertex, int32>()
+    let fringe = PriorityQueue<'vertex, int32>()
+
+    visited.Add(start, 0) |> ignore
+    fringe.Enqueue(start, 0)
+
+    let rec doSearch () =
+        match fringe.TryDequeue () with
+        | true, v, c ->
+
+            for (n, cc) in fNeighbors v do
+                match visited.TryAdd(n, c + cc) with
+                | true -> fringe.Enqueue(n, c + cc)
+                | false -> ()
+
+            doSearch()
+        | false, _, _->
+            Seq.map (fun (p: KeyValuePair<'vertex, int32>) -> p.Key, p.Value) visited |> Seq.toList
+
+    doSearch ()
+
