@@ -17,6 +17,9 @@ let tryItem2dp (x, y) array = tryItem2d x y array
 let neighbors2d8 x y array =
     Tuple2.neighbors8 (x, y) |> Seq.choose (fun (x, y) -> tryItem2d x y array)
 
+let neighbors2d4p p array =
+    Tuple2.neighbors4 p |> Seq.choose (flip tryItem2dp array)
+
 let item3d x y z array =
     array |> Array.item z |> Array.item y |> Array.item x
 
@@ -39,6 +42,9 @@ let allIndexes2d array =
             for x in Array.item y array |> allIndexes do
                 yield x, y
     }
+
+let bounds2d array =
+    Array.length (Array.item 0 array), Array.length array
 
 let tryItem4d x y z w array =
     array

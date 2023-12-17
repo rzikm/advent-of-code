@@ -4,6 +4,8 @@ open FSharpPlus
 
 let create a b = (a, b)
 
+let broadcast x = (x, x)
+
 let map f (i1, i2) = (f i1, f i2)
 let map2 f (x1, x2) (y1, y2) = (f x1 y1, f x2 y2)
 
@@ -16,6 +18,8 @@ let inline (<*>) f t = apply f t
 let inline add l r = (+) <!> l <*> r
 let inline sub l r = (-) <!> l <*> r
 let inline mul l r = (*) <!> l <*> r
+let inline smul s t = broadcast s |> mul t
+let inline neg t = (~-) <!> t
 
 let inline lt t1 t2 = (<) <!> t1 <*> t2 |> uncurry (&&)
 let inline le t1 t2 = (<=) <!> t1 <*> t2 |> uncurry (&&)
@@ -25,7 +29,6 @@ let inline ge t1 t2 = (>=) <!> t1 <*> t2 |> uncurry (&&)
 let inline rotLeft (x, y) = (y, -x)
 let inline rotRight (x, y) = (-y, x)
 
-let broadcast x = (x, x)
 
 let inline manhattanDist t1 t2 = sub t1 t2 |> map abs |> uncurry (+)
 
