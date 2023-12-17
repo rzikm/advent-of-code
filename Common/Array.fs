@@ -103,4 +103,4 @@ module Tests =
 
         let expected = [| [| 3; 6 |]; [| 2; 5 |]; [| 1; 4 |] |]
 
-        rotate2dClockwise original |> should equal expected
+        rotate2dCounterclockwise original |> should equal expected

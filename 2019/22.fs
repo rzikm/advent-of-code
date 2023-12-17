@@ -4,7 +4,7 @@ open AdventOfCode
 open FSharpPlus
 open FParsec
 
-let parser = pint32
+let parser = spaces
 
 let solve1 input = 0
 

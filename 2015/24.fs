@@ -4,11 +4,13 @@ open AdventOfCode
 open FSharpPlus
 open FParsec
 
-let parser = pint32
+let parser = spaces
 
-let solve input = 0
+let solve1 input = 0
 
-let solution = makeSolution () parser solve solve
+let solve2 input = 0
+
+let solution = makeSolution () parser solve1 solve2
 
 module Tests =
     open Xunit
@@ -20,6 +22,6 @@ module Tests =
     let ``Example part 1`` () =
         testPart1 solution input |> should equal 0
 
-// [<Fact>]
-// let ``Example part 2`` () =
-//     testPart2 solution input |> should equal 0
+//     [<Fact>]
+//     let ``Example part 2`` () =
+//         testPart2 solution input |> should equal 0
