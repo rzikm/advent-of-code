@@ -29,7 +29,6 @@ let inline ge t1 t2 = (>=) <!> t1 <*> t2 |> uncurry (&&)
 let inline rotLeft (x, y) = (y, -x)
 let inline rotRight (x, y) = (-y, x)
 
-
 let inline manhattanDist t1 t2 = sub t1 t2 |> map abs |> uncurry (+)
 
 let swap (a, b) = (b, a)
