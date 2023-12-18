@@ -33,7 +33,6 @@ let solve2 input =
 
     copiesCounts |> Array.sum
 
-
 let solution = makeSolution () parser solve1 solve2
 
 module Tests =

@@ -74,12 +74,7 @@ let solve2 input =
     let corners =
         pipe |> List.filter (fun p -> not <| List.contains (Array.item2dp p input) [ '-'; '|' ])
 
-    // using shoelace formula + picks theorem to calculate area inside the boundary
-    (List.last corners :: corners)
-    |> List.pairwise
-    |> List.sumBy (fun ((x1, y1), (x2, y2)) -> x1 * y2 - x2 * y1)
-    |> abs
-    |> fun area -> area / 2 - (List.length pipe) / 2 + 1
+    Geometry.axisAlignedPolygonArea corners - List.length pipe
 
 let solution = makeSolution () parser solve1 solve2
 

@@ -36,7 +36,7 @@ let getArrangementCount chars counts =
                             frec ((List.trySkip (start + count + 1) part |> Option.defaultValue []) :: parts, counts)
                         | _ -> 0)
 
-                // skip this part for this busequence
+                // skip this part for this subsequence
                 let ifNotTaken =
                     match List.contains '#' part with
                     | true -> 0L // can't skip this part

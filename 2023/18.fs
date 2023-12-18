@@ -61,8 +61,8 @@ module Tests =
 
     [<Fact>]
     let ``Example part 1`` () =
-        testPart1 solution input |> should equal 62
+        testPart1 solution input |> should equal 62L
 
-//     [<Fact>]
-//     let ``Example part 2`` () =
-//         testPart2 solution input |> should equal 0
+    [<Fact>]
+    let ``Example part 2`` () =
+        testPart2 solution input |> should equal 952408144115L

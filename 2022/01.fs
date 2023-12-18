@@ -5,8 +5,6 @@ open FParsec
 open FSharpPlus
 
 let parser =
-    let nonwhite = satisfy (System.Char.IsWhiteSpace >> not)
-
     let pline = pint32
     let pgroup = sepEndBy1 pline (pchar '\n')
     sepEndBy1 pgroup (pchar '\n')
