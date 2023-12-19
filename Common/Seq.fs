@@ -8,3 +8,6 @@ let loop s =
 
 let count prediacate s =
     s |> Seq.fold (fun acc s -> if prediacate s then acc + 1 else acc) 0
+
+let toLookupMap fkey seq =
+    seq |> Seq.map (fun x -> fkey x, x) |> Map.ofSeq
