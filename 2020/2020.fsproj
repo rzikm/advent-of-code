@@ -31,7 +31,6 @@
     <Compile Include="23.fs" />
     <Compile Include="24.fs" />
     <Compile Include="25.fs" />
-    <Compile Include="../Common/Runner.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
