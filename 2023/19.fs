@@ -128,38 +128,30 @@ let solve2 (workflows, _) =
             | Reject -> 0L
             | Transfer name -> run name ((x0, x1), (m0, m1), (a0, a1), (s0, s1))
 
-        let split category fsplit1 fsplit2 part =
-            match category with
-            | X -> 
-                (view _1 part |> fsplit1 |> Option.map (flip (setl _1) part)),
-                (view _1 part |> fsplit2 |> Option.map (flip (setl _1) part))
-            | M ->
-                (view _2 part |> fsplit1 |> Option.map (flip (setl _2) part)),
-                (view _2 part |> fsplit2 |> Option.map (flip (setl _2) part))
-            | A ->
-                (view _3 part |> fsplit1 |> Option.map (flip (setl _3) part)),
-                (view _3 part |> fsplit2 |> Option.map (flip (setl _3) part))
-            | S ->
-                (view _4 part |> fsplit1 |> Option.map (flip (setl _4) part)),
-                (view _4 part |> fsplit2 |> Option.map (flip (setl _4) part))
-
         let workflow = Map.find name workflows
 
         let folder (acc, part) rule =
             if part = zero then acc, part
             else
+                let doSplits category toTake toLeave =
+                    let ifTaken, ifNot =
+                        let doWork get map =
+                            (get part |> toTake |> Option.map (fun p -> map (Utils.constf p) part)),
+                            (get part |> toLeave |> Option.map (fun p -> map (Utils.constf p) part))
+
+                        match category with
+                        | X -> doWork item1 mapItem1
+                        | M -> doWork item2 mapItem2
+                        | A -> doWork item3 mapItem3
+                        | S -> doWork item4 mapItem4
+
+                    let ifTaken = ifTaken |> Option.map (sumResf rule.result) |> Option.defaultValue 0L
+                    (acc + ifTaken), ifNot |> Option.defaultValue zero
+
                 match rule.condition with
                 | All -> acc + sumResf rule.result part, zero
-                | Less (category, x) ->
-                    let ifTaken, ifNot = split category (splitLess x) (splitGreater (x - 1L)) part
-                    let ifTakenCount = ifTaken |> Option.map (sumResf rule.result) |> Option.defaultValue 0L
-
-                    (acc + ifTakenCount), ifNot |> Option.defaultValue zero
-                | Greater (category, x) ->
-                    let ifTaken, ifNot = split category (splitGreater x) (splitLess (x + 1L)) part
-                    let ifTaken = ifTaken |> Option.map (sumResf rule.result) |> Option.defaultValue 0L
-
-                    acc + ifTaken, ifNot |> Option.defaultValue zero
+                | Less (c, x) -> doSplits c (splitLess x) (splitGreater (x - 1L))
+                | Greater (c, x) -> doSplits c (splitGreater x) (splitLess (x + 1L))
 
         List.fold folder (0L, part) workflow.rules |> fst
     

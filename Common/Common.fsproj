@@ -19,6 +19,7 @@
     <Compile Include="Geometry.fs" />
     <Compile Include="Graph.fs" />
     <Compile Include="Runner.fs" />
+    <Compile Include="Lens.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="argu" Version="6.1.1" />
