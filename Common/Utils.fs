@@ -101,13 +101,19 @@ let logValue format value =
     Printf.printfn format value
     value
 
-let loopUntilRepeat f start =
+let loopUntilRepeatWithKey f fkey start =
     let rec loop statesToIndex s index =
-        match Map.tryFind s statesToIndex with
-        | Some loopStart -> (s, loopStart, index - loopStart)
-        | None -> loop (Map.add s index statesToIndex) (f s) (index + 1)
+        let key = fkey s
+
+        match Map.tryFind key statesToIndex with
+        | Some (ss, loopStart) -> (ss, s, loopStart, index - loopStart)
+        | None -> loop (Map.add key (s, index) statesToIndex) (f s) (index + 1)
 
     loop Map.empty start 0
+
+let loopUntilRepeat f start =
+    let firstState, _, loopStart, period = loopUntilRepeatWithKey f id start
+    (firstState, loopStart, period)
 
 let applyNWithRepeatDetection n f start =
     let rec loop statesToIndex s index =

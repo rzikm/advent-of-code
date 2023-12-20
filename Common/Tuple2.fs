@@ -6,6 +6,8 @@ let create a b = (a, b)
 
 let broadcast x = (x, x)
 
+let reduce f (x, y) = f x y
+
 let map f (i1, i2) = (f i1, f i2)
 let map2 f (x1, x2) (y1, y2) = (f x1 y1, f x2 y2)
 

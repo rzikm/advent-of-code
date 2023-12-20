@@ -25,7 +25,7 @@ let parseArgs (args: string []) =
 
 let getSolution classPrefix (day: int) =
     let getType typename =
-        match Type.GetType typename with
+        match System.Reflection.Assembly.GetEntryAssembly().GetType typename with
         | null -> Error(sprintf "Unable to find type %s" typename)
         | t -> Ok t
 
