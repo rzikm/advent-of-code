@@ -46,6 +46,22 @@ let allIndexes2d array =
 let bounds2d array =
     Array.length (Array.item 0 array), Array.length array
 
+let isInBounds2d (x, y) array =
+    y >= 0 && y < Array.length array && x >= 0 && x < (Array.item y array |> Array.length)
+
+let tryFindIndex2d f array =
+    let lenx, leny = bounds2d array
+
+    let rec loop x y =
+        if x >= lenx then loop 0 (y + 1)
+        elif y >= leny then None
+        elif f (item2d x y array) then Some(x, y)
+        else loop (x + 1) y
+
+    loop 0 0
+
+let findIndex2d f array = tryFindIndex2d f array |> Option.get
+
 let tryItem4d x y z w array =
     array
     |> Array.tryItem w

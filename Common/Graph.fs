@@ -1,6 +1,7 @@
 ﻿module Graph
 
 open System.Collections.Generic
+open FSharpPlus
 
 let inline aStar
     (fHeuristic: 'vertex -> int32)
@@ -31,13 +32,13 @@ let inline aStar
             | true, (_, x) -> finalPath x (v :: tail)
 
     let rec doSearch () =
-        match fringe.TryDequeue () with
+        match fringe.TryDequeue() with
         | true, (vCost, v, from), _ ->
             // found shortest path to 'v' via 'from'
             preds.Item v <- (vCost, from)
 
             if fFinish v then
-                Some (finalPath v [], vCost)
+                Some(finalPath v [], vCost)
             else
                 for (n, nCost) in fNeighbors v do
                     if not <| Set.contains n starts then
@@ -48,11 +49,7 @@ let inline aStar
 
     doSearch ()
 
-let shortestPaths
-    (fNeighbors: 'vertex -> ('vertex * int32) seq)
-    (start: 'vertex)
-    (ends: 'vertex list)
-    =
+let shortestPaths (fNeighbors: 'vertex -> ('vertex * int32) seq) (start: 'vertex) (ends: 'vertex list) =
 
     let preds = Dictionary<'vertex, int32 * 'vertex>()
     let fringe = PriorityQueue<int32 * 'vertex * 'vertex, int32>()
@@ -74,7 +71,8 @@ let shortestPaths
             | true, (_, x) -> finalPath x (v :: tail)
 
     let rec doSearch ends acc =
-        if ends = [] || fringe.Count = 0 then acc
+        if ends = [] || fringe.Count = 0 then
+            acc
         else
             let (vCost, v, from) = fringe.Dequeue()
 
@@ -83,11 +81,10 @@ let shortestPaths
                 preds.Item v <- (vCost, from)
 
                 for (n, nCost) in fNeighbors v do
-                    if v <> start then
-                        addNeighbor v (n, vCost + nCost)
+                    if v <> start then addNeighbor v (n, vCost + nCost)
 
                 if List.contains v ends then
-                    doSearch (List.except [v] ends) ((v, (finalPath v [], vCost)):: acc)
+                    doSearch (List.except [ v ] ends) ((v, (finalPath v [], vCost)) :: acc)
                 else
                     doSearch ends acc
             else
@@ -95,37 +92,29 @@ let shortestPaths
 
     doSearch ends []
 
-let connectedComponent
-    (fNeighbors: 'vertex -> ('vertex) seq)
-    (start: 'vertex )
-    =
+let connectedComponent (fNeighbors: 'vertex -> ('vertex) seq) (start: 'vertex) =
     let visited = HashSet<'vertex>()
     let fringe = Queue<'vertex>()
 
     let addNeighbor v n =
-        if visited.Add(n) then
-            fringe.Enqueue(n)
+        if visited.Add(n) then fringe.Enqueue(n)
 
     visited.Add(start) |> ignore
     fringe.Enqueue(start)
 
     let rec doSearch () =
-        match fringe.TryDequeue () with
+        match fringe.TryDequeue() with
         | true, v ->
 
             for n in fNeighbors v do
                 addNeighbor v n
 
-            doSearch()
-        | false, _->
-            Seq.toList visited
+            doSearch ()
+        | false, _ -> Seq.toList visited
 
     doSearch ()
 
-let flood
-    (fNeighbors: 'vertex -> ('vertex * int) seq)
-    (start: 'vertex )
-    =
+let flood (fNeighbors: 'vertex -> ('vertex * int) seq) (start: 'vertex) =
     let visited = HashSet<'vertex>()
     let fringe = PriorityQueue<'vertex, int32>()
 
@@ -136,12 +125,24 @@ let flood
         yield (start, 0)
 
         while fringe.Count > 0 do
-            let _, v, c = fringe.TryDequeue ()
+            let _, v, c = fringe.TryDequeue()
+
             for (n, cc) in fNeighbors v do
                 match visited.Add(n) with
                 | true ->
                     fringe.Enqueue(n, c + cc)
                     yield (n, c + cc)
                 | false -> ()
-    }
+    } |> Seq.cache
 
+module Grid =
+    let makeFNeighbors (grid: 'a array array) (costF: (int * int) * 'a -> (int * int) * 'a -> int option) =
+        let fNeighbors pos =
+            Tuple2.neighbors4 pos
+            |> Seq.filter (flip Array.isInBounds2d grid)
+            |> Seq.choose (fun n ->
+                let from' = pos, Array.item2dp pos grid
+                let to' = n, Array.item2dp n grid
+                costF from' to' |> Option.map (fun cost -> n, cost))
+
+        fNeighbors
