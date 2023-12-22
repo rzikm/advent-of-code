@@ -23,10 +23,10 @@ let inline mul l r = (*) <!> l <*> r
 let inline smul s t = broadcast s |> mul t
 let inline neg t = (~-) <!> t
 
-let inline lt t1 t2 = (<) <!> t1 <*> t2 |> uncurry (&&)
-let inline le t1 t2 = (<=) <!> t1 <*> t2 |> uncurry (&&)
-let inline gt t1 t2 = (>) <!> t1 <*> t2 |> uncurry (&&)
-let inline ge t1 t2 = (>=) <!> t1 <*> t2 |> uncurry (&&)
+let lt t1 t2 = (<) <!> t1 <*> t2 |> uncurry (&&)
+let le t1 t2 = (<=) <!> t1 <*> t2 |> uncurry (&&)
+let gt t1 t2 = (>) <!> t1 <*> t2 |> uncurry (&&)
+let ge t1 t2 = (>=) <!> t1 <*> t2 |> uncurry (&&)
 
 let inline rotLeft (x, y) = (y, -x)
 let inline rotRight (x, y) = (-y, x)
