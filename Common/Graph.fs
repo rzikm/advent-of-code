@@ -3,6 +3,22 @@
 open System.Collections.Generic
 open FSharpPlus
 
+let rec foldPath fNeighbors start (next, cost) =
+    match fNeighbors next |> Seq.filter (fun (n, _) -> n <> start) |> Seq.tryExactlyOne with
+    | None -> next, cost
+    | Some (n, c) -> foldPath fNeighbors next (n, cost + c)
+
+let withPathFolding fShouldFold fNeighbors =
+    let rec foldPath acc previous current =
+        if not <| fShouldFold current then
+            current, acc
+        else
+            match fNeighbors current |> Seq.filter (fun (n, _) -> n <> previous) |> Seq.tryExactlyOne with
+            | None -> current, acc
+            | Some (n, c) -> foldPath (acc + c) current n
+
+    Utils.memoize <| fun from' -> from' |> fNeighbors |> Seq.map (fun (n, c) -> foldPath c from' n) |> Seq.cache
+
 let inline aStar
     (fHeuristic: 'vertex -> int32)
     (fNeighbors: 'vertex -> ('vertex * int32) seq)
@@ -133,7 +149,31 @@ let flood (fNeighbors: 'vertex -> ('vertex * int) seq) (start: 'vertex) =
                     fringe.Enqueue(n, c + cc)
                     yield (n, c + cc)
                 | false -> ()
-    } |> Seq.cache
+    }
+    |> Seq.cache
+
+let allPathsBetween (fNeighbors: 'vertex -> ('vertex * int) seq) (fFinish: 'vertex -> bool) (start: 'vertex) =
+
+    let stack = Stack<'vertex list * int>()
+    stack.Push([ start ], 0)
+
+    seq {
+        while stack.Count > 0 do
+            let visited, cost = stack.Pop()
+            let current = List.head visited
+
+            if fFinish current then
+                yield visited |> List.rev, cost
+            else
+                fNeighbors current
+                |> Seq.filter (fun (n, _) -> not <| List.contains n visited)
+                |> Seq.iter (fun (n, c) -> stack.Push(n :: visited, cost + c))
+    }
+    |> Seq.cache
+
+
+let findLongestPath (fNeighbors: 'vertex -> ('vertex * int) seq) (fFinish: 'vertex -> bool) (start: 'vertex) =
+    allPathsBetween fNeighbors fFinish start |> Seq.maxBy snd
 
 module Grid =
     let makeFNeighbors (grid: 'a array array) (costF: (int * int) * 'a -> (int * int) * 'a -> int option) =

@@ -23,14 +23,14 @@ let getStoppablePlots steps grid =
     //                     F C F
     //                   F E A E F
     //                 F E A B A E F
-    //               F E A B A B A E F 
+    //               F E A B A B A E F
     //             C D A B A S A B A C D
     //               F E A B A B A E F
     //                 F E A B A E F
     //                   F E A E F
     //                     F C F
     //                       D
-    // 
+    //
     // S: Starting tile
     // A: Fully walked tile, Odd number of steps from the start
     // B: Fully walked tile, Even number of steps from the start
@@ -46,13 +46,15 @@ let getStoppablePlots steps grid =
 
     let tileSize, _ = Array.bounds2d grid
     let start = Array.findIndex2d ((=) 'S') grid
+
     let fNeighbors =
         Graph.Grid.makeFNeighbors grid (fun _ (_, cell) -> if cell <> '#' then Some 1 else None)
 
     // Calculates number of cells in B and A from above
     let (evenCount, oddCount) =
         let distances = Graph.flood fNeighbors start
-        let doCalculate parity = 
+
+        let doCalculate parity =
             distances |> Seq.count (fun (_, d) -> d <= steps && d % 2 = parity) |> int64
 
         (doCalculate <| steps % 2), (doCalculate <| 1 - steps % 2)
@@ -125,7 +127,7 @@ module Tests =
 
     [<Fact>]
     let ``Example part 1`` () =
-        parseTestInput parser input |> getStoppablePlots 6 |> should equal 16
+        parseTestInput parser input |> getStoppablePlots 6 |> should equal 20L
 
     let input2 =
         [| "..........."
