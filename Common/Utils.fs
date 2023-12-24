@@ -17,6 +17,9 @@ let rec subsets size list =
                 yield! subsets size tail
     }
 
+let allPairs seq =
+    subsets 2 seq |> Seq.map (fun l -> l.[0], l.[1])
+
 let rec allSubsets list =
     seq {
         match list with
@@ -95,7 +98,7 @@ let findMatching possibilities =
 
     find (Map.keys possibilities |> List.ofSeq) []
 
-let constf v _ = v
+let constf v = fun _ -> v
 
 let logValue format value =
     Printf.printfn format value

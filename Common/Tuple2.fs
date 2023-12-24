@@ -20,7 +20,7 @@ let inline (<*>) f t = apply f t
 let inline add l r = (+) <!> l <*> r
 let inline sub l r = (-) <!> l <*> r
 let inline mul l r = (*) <!> l <*> r
-let inline smul s t = broadcast s |> mul t
+let inline scale s t = broadcast s |> mul t
 let inline neg t = (~-) <!> t
 
 let lt t1 t2 = (<) <!> t1 <*> t2 |> uncurry (&&)

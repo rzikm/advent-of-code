@@ -16,7 +16,7 @@ let parser =
     ParseUtils.lines (tuple3 (pDir .>> spaces) (pint64 .>> spaces) color)
 
 let getPoints input =
-    List.scan (fun s (d, c, _) -> Tuple2.add s (Tuple2.smul c d)) (0L, 0L) input
+    List.scan (fun s (d, c, _) -> Tuple2.add s (Tuple2.scale c d)) (0L, 0L) input
 
 let solve1 input =
     getPoints input |> Geometry.axisAlignedPolygonArea
