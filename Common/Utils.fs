@@ -98,7 +98,7 @@ let findMatching possibilities =
 
     find (Map.keys possibilities |> List.ofSeq) []
 
-let constf v = fun _ -> v
+let konst v = fun _ -> v
 
 let logValue format value =
     Printf.printfn format value

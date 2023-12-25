@@ -52,7 +52,7 @@ let solve2 input =
     // Since the equations are non-linear, we will use Newton's method to solve them. First,
     // We rearrange the equations
     // and let x = [| x0, y0, z0, dx0, dy0, dz0, t1, t2, t3 |]
-    let f (x: 'a array) =
+    let f (x: float array) =
         [| x.[0] + x.[6] * x.[3] - x1 - x.[6] * dx1
            x.[1] + x.[6] * x.[4] - y1 - x.[6] * dy1
            x.[2] + x.[6] * x.[5] - z1 - x.[6] * dz1

@@ -12,7 +12,7 @@ let md5 (str: string) =
     System.Convert.ToHexString(hash)
 
 let solve zeros input =
-    let prefix = String.init zeros (Utils.constf "0")
+    let prefix = String.init zeros (Utils.konst "0")
     Seq.initInfinite id |> Seq.find (fun n -> input + string n |> md5 |> String.startsWith prefix)
 
 let solution = makeSolution () parser (solve 5) (solve 6)

@@ -35,7 +35,7 @@ let decimalToSnafu num =
 let solve input =
     List.sumBy snafuToDecimal input |> decimalToSnafu
 
-let solution = makeSolution () parser solve (Utils.constf "*")
+let solution = makeSolution () parser solve (Utils.konst "*")
 
 module Tests =
     open Xunit

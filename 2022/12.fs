@@ -26,7 +26,7 @@ let solve toChar input =
                 else
                     None))
 
-    Graph.aStar (Utils.constf 0) neighbors (fun v -> uncurry Array.item2d v input = toChar) [ start ]
+    Graph.aStar (Utils.konst 0) neighbors (fun v -> uncurry Array.item2d v input = toChar) [ start ]
     |> Option.get
     |> snd
 

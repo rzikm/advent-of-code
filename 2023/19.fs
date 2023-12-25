@@ -136,8 +136,8 @@ let solve2 (workflows, _) =
                 let doSplits category toTake toLeave =
                     let ifTaken, ifNot =
                         let doWork get map =
-                            (get part |> toTake |> Option.map (fun p -> map (Utils.constf p) part)),
-                            (get part |> toLeave |> Option.map (fun p -> map (Utils.constf p) part))
+                            (get part |> toTake |> Option.map (fun p -> map (Utils.konst p) part)),
+                            (get part |> toLeave |> Option.map (fun p -> map (Utils.konst p) part))
 
                         match category with
                         | X -> doWork item1 mapItem1
