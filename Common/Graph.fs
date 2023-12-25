@@ -34,7 +34,7 @@ let inline aStar
         match preds.TryGetValue n with
         | true, (nPrevCost, _) when nPrevCost <= nCost -> () // already have a better path to n
         | _ -> // found a better path to n via v
-            preds.Item n <- (nCost, v)
+            preds.Item(n) <- (nCost, v)
             fringe.Enqueue((nCost, n, v), (nCost + fHeuristic n))
 
     startVertices |> Seq.iter (fun v -> fNeighbors v |> Seq.iter (addNeighbor v))
@@ -51,7 +51,7 @@ let inline aStar
         match fringe.TryDequeue() with
         | true, (vCost, v, from), _ ->
             // found shortest path to 'v' via 'from'
-            preds.Item v <- (vCost, from)
+            preds.Item(v) <- (vCost, from)
 
             if fFinish v then
                 Some(finalPath v [], vCost)
@@ -94,7 +94,7 @@ let shortestPaths (fNeighbors: 'vertex -> ('vertex * int32) seq) (start: 'vertex
 
             if not <| preds.ContainsKey(v) then
                 // found shortest path to 'v' via 'from'
-                preds.Item v <- (vCost, from)
+                preds.Item(v) <- (vCost, from)
 
                 for (n, nCost) in fNeighbors v do
                     if v <> start then addNeighbor v (n, vCost + nCost)
@@ -171,9 +171,56 @@ let allPathsBetween (fNeighbors: 'vertex -> ('vertex * int) seq) (fFinish: 'vert
     }
     |> Seq.cache
 
-
 let findLongestPath (fNeighbors: 'vertex -> ('vertex * int) seq) (fFinish: 'vertex -> bool) (start: 'vertex) =
     allPathsBetween fNeighbors fFinish start |> Seq.maxBy snd
+
+// Implements the Edmonds-Karp algorithm for finding the maximal flow in a network.
+let inline findMaxFlow (fNeighbors: 'vertex -> ('vertex * 'capacity) seq) (source: 'vertex) (sink: 'vertex) =
+    let flow: Dictionary<'vertex * 'vertex, _> = Dictionary()
+
+    let getFlow a b =
+        match flow.TryGetValue((a, b)) with
+        | true, v -> v
+        | _ -> LanguagePrimitives.GenericZero
+
+    let updateFlow from' to' delta =
+        let setflow a b value = flow.Item((a, b)) <- value
+
+        getFlow from' to' + delta |> setflow from' to'
+        getFlow to' from' - delta |> setflow to' from'
+
+    let findpath () =
+        let fNeighbors node =
+            let neighbors = fNeighbors node
+
+            neighbors
+            |> Seq.filter (fun (n, capacity) -> capacity - getFlow node n > LanguagePrimitives.GenericZero)
+            |> Seq.map (mapItem2 <| konst 1)
+
+        shortestPaths fNeighbors source [ sink ] |> List.tryExactlyOne
+
+    let rec loop () =
+        match findpath () with
+        | Some (_, (path, _)) ->
+            let delta =
+                path
+                |> List.pairwise
+                |> List.map (fun (a, b) -> fNeighbors a |> Seq.find (fst >> (=) b) |> snd)
+                |> List.min
+
+            path |> List.pairwise |> List.iter (fun (a, b) -> updateFlow a b delta) |> loop
+        | None -> ()
+
+    loop ()
+    let maxFlow = fNeighbors source |> Seq.sumBy (fun (n, _) -> getFlow source n)
+
+    let edges =
+        flow.Keys
+        |> Seq.map (fun (a, b) -> a, b, getFlow a b)
+        |> Seq.choose (Option.returnIf (item3 >> flip (>) LanguagePrimitives.GenericZero))
+        |> Seq.cache
+
+    maxFlow, edges
 
 module Grid =
     let makeFNeighbors (grid: 'a array array) (costF: (int * int) * 'a -> (int * int) * 'a -> int option) =
