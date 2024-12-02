@@ -11,14 +11,14 @@
             "processId": "${command:pickProcess}"
         },
         {
-            "name": "2023 (console)",
+            "name": "2024 (console)",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/2023/bin/Debug/net8.0/2023.dll",
+            "program": "${workspaceFolder}/2024/bin/Debug/net9.0/2024.dll",
             "args": [
-                "24"
+                "01"
             ],
-            "cwd": "${workspaceFolder}/2023",
+            "cwd": "${workspaceFolder}/2024",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -26,7 +26,7 @@
             "name": "2022 (console)",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/2022/bin/Debug/net8.0/2022.dll",
+            "program": "${workspaceFolder}/2022/bin/Debug/net9.0/2022.dll",
             "args": [
                 "22"
             ],
@@ -38,7 +38,7 @@
             "name": "2015 (console)",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/2015/bin/Debug/net8.0/2015.dll",
+            "program": "${workspaceFolder}/2015/bin/Debug/net9.0/2015.dll",
             "args": [
                 "10"
             ],
