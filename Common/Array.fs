@@ -46,6 +46,24 @@ let allIndexes2d array =
 let bounds2d array =
     Array.length (Array.item 0 array), Array.length array
 
+let allIndexesInLine len array =
+    let (xx, yy) = bounds2d array
+
+    seq {
+        for x0 in 0 .. xx - 1 do
+            for y0 in 0 .. yy - 1 do
+                if x0 + len <= xx then
+                    yield [ for d in 0 .. len - 1 -> (x0 + d, y0) ]
+
+                if y0 + len <= yy then
+                    yield [ for k in 0 .. len - 1 -> (x0, y0 + k) ]
+
+                if x0 + len <= xx && y0 + len <= yy then
+                    yield [ for k in 0 .. len - 1 -> (x0 + k, y0 + k) ]
+                    yield [ for k in 0 .. len - 1 -> (x0 + len - 1 - k, y0 + k) ]
+
+    }
+
 let isInBounds2d (x, y) array =
     y >= 0 && y < Array.length array && x >= 0 && x < (Array.item y array |> Array.length)
 
