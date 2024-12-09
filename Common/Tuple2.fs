@@ -28,6 +28,8 @@ let le t1 t2 = (<=) <!> t1 <*> t2 |> uncurry (&&)
 let gt t1 t2 = (>) <!> t1 <*> t2 |> uncurry (&&)
 let ge t1 t2 = (>=) <!> t1 <*> t2 |> uncurry (&&)
 
+let inBounds p0 p1 p = le p0 p && lt p p1 // p0 <= p && p < p1
+
 let inline rotLeft (x, y) = (y, -x)
 let inline rotRight (x, y) = (-y, x)
 
