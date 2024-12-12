@@ -56,30 +56,21 @@ let (^) (f: 'a -> 'a) (n: int) (v: 'a) = applyN n f v
 let parseInt (baze: int) (str: string) = System.Convert.ToInt32(str, baze)
 
 let memoizerec f =
-    let cache = new System.Collections.Generic.Dictionary<_, _>()
+    let cache = System.Collections.Concurrent.ConcurrentDictionary<'a, Lazy<'b>>()
 
     let rec newf value =
-        match cache.TryGetValue value with
-        | true, res -> res
-        | false, _ ->
-            let res = f newf value
-            cache.Add(value, res)
-            res
+        cache.GetOrAdd(value, (fun x -> lazy f newf x)).Value
 
     newf
 
+
 let memoize f =
-    let cache = new System.Collections.Generic.Dictionary<_, _>()
+    let cache = System.Collections.Concurrent.ConcurrentDictionary<'a, Lazy<'b>>()
 
-    let getValue value =
-        match cache.TryGetValue value with
-        | true, res -> res
-        | false, _ ->
-            let res = f value
-            cache.Add(value, res)
-            res
+    let rec newf value =
+        cache.GetOrAdd(value, (fun x -> lazy f x)).Value
 
-    getValue
+    newf
 
 let parseInput parser input =
     match FParsec.CharParsers.run parser input with
