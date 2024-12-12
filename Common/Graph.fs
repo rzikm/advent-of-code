@@ -112,7 +112,7 @@ let connectedComponent (fNeighbors: 'vertex -> ('vertex) seq) (start: 'vertex) =
     let visited = HashSet<'vertex>()
     let fringe = Queue<'vertex>()
 
-    let addNeighbor v n =
+    let addNeighbor n =
         if visited.Add(n) then fringe.Enqueue(n)
 
     visited.Add(start) |> ignore
@@ -123,7 +123,7 @@ let connectedComponent (fNeighbors: 'vertex -> ('vertex) seq) (start: 'vertex) =
         | true, v ->
 
             for n in fNeighbors v do
-                addNeighbor v n
+                addNeighbor n
 
             doSearch ()
         | false, _ -> Seq.toList visited
