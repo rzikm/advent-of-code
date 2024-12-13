@@ -16,7 +16,7 @@ module Tests =
     open Xunit
     open FsUnit.Xunit
 
-    let input = [| "" |]
+    let input = [||]
 
     [<Fact>]
     let ``Example part 1`` () =
