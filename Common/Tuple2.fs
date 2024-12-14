@@ -20,6 +20,7 @@ let inline (<*>) f t = apply f t
 let inline add l r = (+) <!> l <*> r
 let inline sub l r = (-) <!> l <*> r
 let inline mul l r = (*) <!> l <*> r
+let inline div l r = (/) <!> l <*> r
 let inline scale s t = broadcast s |> mul t
 let inline neg t = (~-) <!> t
 
