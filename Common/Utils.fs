@@ -74,8 +74,8 @@ let memoize f =
 
 let parseInput parser input =
     match FParsec.CharParsers.run parser input with
-    | Success (res, _, _) -> res
-    | Failure (err, _, _) -> failwith err
+    | Success(res, _, _) -> res
+    | Failure(err, _, _) -> failwith err
 
 // finds a pairing between key and one of the values in the associated list
 let findMatching possibilities =
@@ -100,7 +100,7 @@ let loopUntilRepeatWithKey f fkey start =
         let key = fkey s
 
         match Map.tryFind key statesToIndex with
-        | Some (ss, loopStart) -> (ss, s, loopStart, index - loopStart)
+        | Some(ss, loopStart) -> (ss, s, loopStart, index - loopStart)
         | None -> loop (Map.add key (s, index) statesToIndex) (f s) (index + 1)
 
     loop Map.empty start 0
@@ -122,3 +122,8 @@ let applyNWithRepeatDetection n f start =
             | None -> loop (Map.add s index statesToIndex) (f s) (index + 1)
 
     loop Map.empty start 0
+
+let gridToString bounds f =
+    [ 0 .. (snd bounds - 1) ]
+    |> List.map (fun y -> [ 0 .. (fst bounds - 1) ] |> List.map (fun x -> f (x, y)) |> String.concat "")
+    |> String.concat "\n"
