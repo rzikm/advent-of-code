@@ -3,10 +3,24 @@
 open System.Collections.Generic
 open FSharpPlus
 
-let rec foldPath fNeighbors start (next, cost) =
-    match fNeighbors next |> Seq.filter (fun (n, _) -> n <> start) |> Seq.tryExactlyOne with
-    | None -> next, cost
-    | Some (n, c) -> foldPath fNeighbors next (n, cost + c)
+module Helpers =
+    let withPatchContracting fNeighbors fFinish =
+        let rec foldPath acc previous path =
+            let current = List.head path
+
+            if fFinish current then
+                path, acc
+            else
+                match fNeighbors current |> Seq.filter (fun (n, _) -> n <> previous) |> Seq.tryExactlyOne with
+                | None -> path, acc
+                | Some (n, c) -> foldPath (acc + c) current (n :: path)
+
+        Utils.memoize <| (fun from' -> from' |> fNeighbors |> Seq.map (fun (n, c) -> foldPath c from' [ n ]))
+
+    let rec contractPath fNeighbors start (next, cost) =
+        match fNeighbors next |> Seq.filter (fun (n, _) -> n <> start) |> Seq.tryExactlyOne with
+        | None -> next, cost
+        | Some (n, c) -> contractPath fNeighbors next (n, cost + c)
 
 let withPathFolding fShouldFold fNeighbors =
     let rec foldPath acc previous current =
@@ -64,6 +78,44 @@ let inline aStar
         | _ -> None
 
     doSearch ()
+
+let inline aStarAllPaths
+    (fHeuristic: 'vertex -> int32)
+    (fNeighbors: 'vertex -> ('vertex * int32) seq)
+    (fFinish: 'vertex -> bool)
+    (startVertices: 'vertex list)
+    =
+    let fringe = PriorityQueue<'vertex list * int, int>()
+    let bestPaths = Dictionary<'vertex, int>()
+    startVertices |> Seq.iter (fun start -> fringe.Enqueue(([ start ], 0), fHeuristic start))
+
+    let fNeighbors = Helpers.withPatchContracting fNeighbors fFinish
+
+    let mutable best = None
+    let mutable doBreak = false
+
+    seq {
+        while fringe.Count > 0 && not doBreak do
+            let visited, cost = fringe.Dequeue()
+            let current = List.head visited
+
+            match bestPaths.TryGetValue current with
+            | true, bestCost when bestCost < cost -> () // already have a better path to current
+            | _ -> // found a better path to current
+                bestPaths.Item(current) <- cost
+
+                if best.IsSome && cost > best.Value then
+                    doBreak <- true
+                else if fFinish current then
+                    if best = None then best <- Some cost
+                    yield visited |> List.rev, cost
+                else
+                    fNeighbors current
+                    |> Seq.filter (fun (n, _) -> not <| List.contains (List.head n) visited)
+                    |> Seq.iter (fun (n, c) ->
+                        fringe.Enqueue((List.append n visited, cost + c), cost + c + fHeuristic (List.head n)))
+    }
+    |> Seq.cache
 
 let shortestPaths (fNeighbors: 'vertex -> ('vertex * int32) seq) (start: 'vertex) (ends: 'vertex list) =
 
@@ -153,13 +205,12 @@ let flood (fNeighbors: 'vertex -> ('vertex * int) seq) (start: 'vertex) =
     |> Seq.cache
 
 let allPathsBetween (fNeighbors: 'vertex -> ('vertex * int) seq) (fFinish: 'vertex -> bool) (start: 'vertex) =
-
-    let stack = Stack<'vertex list * int>()
-    stack.Push([ start ], 0)
+    let fringe = PriorityQueue<'vertex list * int, int>()
+    fringe.Enqueue(([ start ], 0), 0)
 
     seq {
-        while stack.Count > 0 do
-            let visited, cost = stack.Pop()
+        while fringe.Count > 0 do
+            let visited, cost = fringe.Dequeue()
             let current = List.head visited
 
             if fFinish current then
@@ -167,7 +218,7 @@ let allPathsBetween (fNeighbors: 'vertex -> ('vertex * int) seq) (fFinish: 'vert
             else
                 fNeighbors current
                 |> Seq.filter (fun (n, _) -> not <| List.contains n visited)
-                |> Seq.iter (fun (n, c) -> stack.Push(n :: visited, cost + c))
+                |> Seq.iter (fun (n, c) -> fringe.Enqueue((n :: visited, cost + c), cost + c))
     }
     |> Seq.cache
 
