@@ -23,10 +23,12 @@ let makeSolution
       solve1 = fun input -> (solve1 (downcast input)) :> Object
       solve2 = fun input -> (solve2 (downcast input)) :> Object }
 
-let parseTestInput parser input =
-    match runParserOnString parser () "input" (String.concat "\n" input) with
+let parseTestInputWithState parser state input =
+    match runParserOnString parser state "input" (String.concat "\n" input) with
     | Success (res, _, _) -> res
     | Failure (err, _, _) -> failwith err
+
+let parseTestInput parser = parseTestInputWithState parser ()
 
 let private parseTestInputFromSolution (solution: Solution) input =
     let stream =

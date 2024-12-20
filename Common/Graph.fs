@@ -84,6 +84,7 @@ let inline aStarAllPaths
     (fNeighbors: 'vertex -> ('vertex * int32) seq)
     (fFinish: 'vertex -> bool)
     (startVertices: 'vertex list)
+    (shouldContinue: int32 -> int32 -> bool)
     =
     let fringe = PriorityQueue<'vertex list * int, int>()
     let bestPaths = Dictionary<'vertex, int>()
@@ -102,14 +103,18 @@ let inline aStarAllPaths
             match bestPaths.TryGetValue current with
             | true, bestCost when bestCost < cost -> () // already have a better path to current
             | _ -> // found a better path to current
-                bestPaths.Item(current) <- cost
-
-                if best.IsSome && cost > best.Value then
-                    doBreak <- true
-                else if fFinish current then
+                if fFinish current then
                     if best = None then best <- Some cost
                     yield visited |> List.rev, cost
+                else if best
+                        |> Option.map (not << shouldContinue (cost + fHeuristic current))
+                        |> Option.defaultValue false then
+                    doBreak <- true
                 else
+                    bestPaths.Item(current) <- cost
+
+                    // printfn "Visiting %A, cost: %d, heuristic: %d" current cost (cost + fHeuristic current)
+
                     fNeighbors current
                     |> Seq.filter (fun (n, _) -> not <| List.contains (List.head n) visited)
                     |> Seq.iter (fun (n, c) ->

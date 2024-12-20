@@ -56,7 +56,7 @@ let solve2 (grid, (s, e)) =
     let fNeighbors = fNeighbors grid
 
     let paths =
-        Graph.aStarAllPaths (fHeuristic e) fNeighbors (fst >> (=) e) [ (s, (1, 0)) ]
+        Graph.aStarAllPaths (fHeuristic e) fNeighbors (fst >> (=) e) [ (s, (1, 0)) ] (fun cost best -> cost <= best)
 
     paths |> Seq.fold (fun acc (path, _) -> Set.union acc (Set.ofList path |> Set.map fst)) Set.empty |> Set.count
 

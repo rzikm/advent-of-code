@@ -52,3 +52,10 @@ let neighbors8 (x, y) =
             for yy in y - 1 .. y + 1 do
                 if xx <> x || yy <> y then yield (xx, yy)
     }
+
+let allIndexesInRange2d (x0, y0) (x1, y1) =
+    seq {
+        for y in y0..y1 do
+            for x in x0..x1 do
+                yield (x, y)
+    }
