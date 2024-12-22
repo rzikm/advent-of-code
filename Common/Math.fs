@@ -58,7 +58,7 @@ let multmod a b m =
     res
 
 // returns true modulo (which always returns non-negative nubmers)
-let modulo x m = (x % m + m) % m
+let inline modulo x m = (x % m + m) % m
 
 // computes a^b mod m using Horner's scheme in log b time
 // assumes 2 * m does not overflow
