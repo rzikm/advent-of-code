@@ -11,3 +11,6 @@ let count prediacate s =
 
 let toLookupMap fkey seq =
     seq |> Seq.map (fun x -> fkey x, x) |> Map.ofSeq
+
+let toMap fKey fValue seq =
+    seq |> Seq.map (fun x -> fKey x, fValue x) |> Map.ofSeq

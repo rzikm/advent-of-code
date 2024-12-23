@@ -2,6 +2,7 @@ module AoC202422
 
 open AdventOfCode
 open FParsec
+open FSharpPlus
 open Utils
 
 let parser = ParseUtils.lines pint32
@@ -16,7 +17,7 @@ let solve1 input =
 
 let solve2 input =
     input
-    |> Seq.collect (fun n ->
+    |> Seq.map (fun n ->
         Seq.unfold (fun n -> Some((n % 10), evolve n)) n
         |> Seq.pairwise
         |> Seq.map (fun (l, r) -> (r, r - l))
@@ -32,10 +33,9 @@ let solve2 input =
                 match Map.containsKey pattern m with
                 | true -> m
                 | false -> Map.add pattern price m)
-            Map.empty
-        |> Map.toSeq)
-    |> Seq.groupBy fst
-    |> Seq.map (fun (_, l) -> l |> Seq.sumBy snd)
+            Map.empty)
+    |> Seq.reduce (Map.merge (+))
+    |> Map.values
     |> Seq.max
 
 let solution = makeSolution () parser solve1 solve2
