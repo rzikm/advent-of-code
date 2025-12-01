@@ -175,7 +175,7 @@ let solve2 input =
     let patSizeX = Array.item 0 pattern |> Array.length
 
     let tryMatchAt image x y =
-        Seq.allPairs { 0 .. (patSizeX - 1) } { 0 .. (patSizeY - 1) }
+        Seq.allPairs (seq { 0 .. (patSizeX - 1) }) (seq { 0 .. (patSizeY - 1) })
         |> Seq.exists (fun (xx, yy) -> Array.item2d xx yy pattern && not <| Array.item2d (x + xx) (y + yy) image)
         |> not
 
@@ -183,7 +183,7 @@ let solve2 input =
         (0, flatImage)
         |> getOrientations
         |> Seq.map (fun (_, img) ->
-            Seq.allPairs { 0 .. (imgSize - patSizeX - 1) } { 0 .. (imgSize - patSizeY - 1) }
+            Seq.allPairs (seq { 0 .. (imgSize - patSizeX - 1) }) (seq { 0 .. (imgSize - patSizeY - 1) })
             |> Seq.filter (fun (x, y) -> tryMatchAt img x y)
             |> Seq.length)
         |> Seq.max

@@ -49,7 +49,7 @@ let move1 board (pos, dir) =
         else // dx = 0
             // scan in the reverse direction until we find plausible cell
             let delta =
-                { 1 .. (Array.length board) }
+                seq { 1 .. (Array.length board) }
                 |> Seq.filter (fun i -> tryGet board (x, y - i * dy) |> Option.isSome)
                 |> Seq.last
 

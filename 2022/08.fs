@@ -18,7 +18,7 @@ let getViewRays input (x, y) =
 
 
 let solve1 input =
-    Seq.allPairs { 0 .. length input - 1 } { 0 .. (item 0 input |> length) - 1 }
+    Seq.allPairs (seq { 0 .. length input - 1 }) (seq { 0 .. (item 0 input |> length) - 1 })
     |> filter (fun (y, x) ->
         let current = Array.item2d x y input
 
@@ -26,7 +26,7 @@ let solve1 input =
     |> length
 
 let solve2 input =
-    Seq.allPairs { 0 .. length input - 1 } { 0 .. (item 0 input |> length) - 1 }
+    Seq.allPairs (seq { 0 .. length input - 1 }) (seq { 0 .. (item 0 input |> length) - 1 })
     |> Seq.map (fun (y, x) ->
         let current = Array.item2d x y input
 

@@ -11,6 +11,18 @@
             "processId": "${command:pickProcess}"
         },
         {
+            "name": "2025 (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/2025/bin/Debug/net9.0/2025.dll",
+            "args": [
+                "1"
+            ],
+            "cwd": "${workspaceFolder}/2025",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
             "name": "2024 (console)",
             "type": "coreclr",
             "request": "launch",

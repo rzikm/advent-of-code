@@ -70,7 +70,7 @@ let tryMoveDown column shape (x, y) =
 
                 match List.tryItem (i + 1) column with
                 | None -> true
-                | Some row -> { x + sx .. x + ex } |> Seq.forall (fun xx -> Array.item xx row |> not))
+                | Some row -> seq { x + sx .. x + ex } |> Seq.forall (fun xx -> Array.item xx row |> not))
 
         if canMove then Some(x, y + 1) else None
 
