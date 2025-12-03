@@ -7,27 +7,22 @@ open FParsec
 let parser = ParseUtils.lines (many1 (digit |>> fun c -> int64 c - int64 '0'))
 
 let getMaxJoltage n digits =
-    let f =
-        Utils.memoizerec (fun loop (n, digits) ->
-            let exp = pown 10L (n - 1)
+    let rec findSplit d digits =
+        match digits with
+        | [] -> None
+        | x :: xs when x = d -> Some xs
+        | _ :: xs -> findSplit d xs
 
-            if n = 0 then
-                0L
-            else
-                match digits with
-                | a :: rest ->
-                    let ifTaken = a * exp + loop (n - 1, rest)
+    let rec findMax n digits =
+        if n = 0 then
+            Some []
+        else
+            [ 1L .. 9L ]
+            |> List.rev
+            |> List.tryPick (fun d ->
+                findSplit d digits |> Option.bind (fun rest -> findMax (n - 1) rest |> Option.map (fun r -> d :: r)))
 
-                    if List.length rest >= n then
-                        let ifNotTaken = loop (n, rest)
-                        max ifTaken ifNotTaken
-                    else
-                        ifTaken
-
-                | _ -> failwith "Nonempty list expected")
-
-    f (n, digits)
-
+    findMax n digits |> Option.get |> List.fold (fun acc x -> acc * 10L + x) 0L
 
 let solve1 input = List.sumBy (getMaxJoltage 2) input
 
