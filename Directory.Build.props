@@ -1,0 +1,16 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+
+        <ArguVersion>6.2.5</ArguVersion>
+        <FParsecVersion>1.1.1</FParsecVersion>
+        <FSharpPlusVersion>1.8.0</FSharpPlusVersion>
+        <FsUnitVersion>7.1.1</FsUnitVersion>
+        <FsUnitXunitVersion>6.0.1</FsUnitXunitVersion>
+
+        <MicrosoftNetTestSdkVersion>18.0.1</MicrosoftNetTestSdkVersion>
+        <XunitVersion>2.9.3</XunitVersion>
+        <XunitRunnerVisualstudioVersion>3.1.5</XunitRunnerVisualstudioVersion>
+        <CoverletCollectorVersion>6.0.4</CoverletCollectorVersion>
+    </PropertyGroup>
+</Project>

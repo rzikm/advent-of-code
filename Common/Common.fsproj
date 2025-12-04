@@ -1,8 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="AoC.fs" />
     <Compile Include="Utils.fs" />
@@ -23,23 +19,26 @@
     <Compile Include="Lens.fs" />
     <Compile Include="MatrixMath.fs" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="argu" Version="6.2.4" />
-    <PackageReference Include="FParsec" Version="1.1.1" />
-    <PackageReference Include="FSharpPlus" Version="1.6.1" />
-    <PackageReference Include="FsUnit" Version="6.0.1" />
-    <PackageReference Include="FsUnit.xUnit" Version="6.0.1" />
+    <PackageReference Include="argu" Version="$(ArguVersion)" />
+    <PackageReference Include="FParsec" Version="$(FParsecVersion)" />
+    <PackageReference Include="FSharpPlus" Version="$(FSharpPlusVersion)" />
+    <PackageReference Include="FsUnit" Version="$(FsUnitVersion)" />
+    <PackageReference Include="FsUnit.xUnit" Version="$(FsUnitXunitVersion)" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageReference Include="xunit" Version="2.9.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualstudioVersion)">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.2">
+    <PackageReference Include="coverlet.collector" Version="$(CoverletCollectorVersion)">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+
 </Project>
