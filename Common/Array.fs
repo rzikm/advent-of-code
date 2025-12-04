@@ -14,8 +14,10 @@ let tryItem2d x y array =
 
 let tryItem2dp (x, y) array = tryItem2d x y array
 
-let neighbors2d8 x y array =
-    Tuple2.neighbors8 (x, y) |> Seq.choose (fun (x, y) -> tryItem2d x y array)
+let neighbors2d8p p array =
+    Tuple2.neighbors8 p |> Seq.choose (fun (x, y) -> tryItem2d x y array)
+
+let neighbors2d8 x y array = neighbors2d8p (x, y) array
 
 let neighbors2d4p p array =
     Tuple2.neighbors4 p |> Seq.choose (flip tryItem2dp array)
