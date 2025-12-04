@@ -119,31 +119,15 @@ module Tests =
     let ``Simple example one step`` () =
         let input = [| "....."; "..##."; "..#.."; "....."; "..##."; "....."; "" |]
 
-        parseTestInput parser input
-        |> doSteps 1
-        |> visualize
-        |> should
-            equal
-            "##
-..
-#.
-.#
-#."
+        parseTestInput parser input |> doSteps 1 |> visualize |> should equal
+        <| String.concat "\n" [| "##"; ".."; "#."; ".#"; "#." |]
 
     [<Fact>]
     let ``Simple example two step`` () =
         let input = [| "....."; "..##."; "..#.."; "....."; "..##."; "....."; "" |]
 
-        parseTestInput parser input
-        |> doSteps 2
-        |> visualize
-        |> should
-            equal
-            ".##.
-#...
-...#
-....
-.#.."
+        parseTestInput parser input |> doSteps 2 |> visualize |> should equal
+        <| String.concat "\n" [ ".##."; "#..."; "...#"; "...."; ".#.." ]
 
 
     [<Fact>]
