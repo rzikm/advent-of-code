@@ -1,4 +1,7 @@
+// Ranges are [start, stop) intervals
 module Range
+
+let inline contains value (start, stop) = start <= value && value < stop
 
 let inline create start count = (start, start + count)
 
@@ -56,6 +59,14 @@ let intersectMany list =
 module Tests =
     open Xunit
     open FsUnit.Xunit
+
+    [<Fact>]
+    let ``Contains`` () =
+        contains 5 (3, 10) |> should be True
+        contains 3 (3, 10) |> should be True
+        contains 9 (3, 10) |> should be True
+        contains 2 (3, 10) |> should be False
+        contains 10 (3, 10) |> should be False
 
     [<Fact>]
     let ``Union touching`` () =
