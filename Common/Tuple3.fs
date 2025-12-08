@@ -25,6 +25,11 @@ let le t1 t2 = (<=) <!> t1 <*> t2 |> allTrue
 let gt t1 t2 = (>) <!> t1 <*> t2 |> allTrue
 let ge t1 t2 = (>=) <!> t1 <*> t2 |> allTrue
 
+let inline euclideanLen (x, y, z) =
+    sqrt (float x * float x + float y * float y + float z * float z)
+
+let inline euclideanDist t1 t2 = sub t1 t2 |> euclideanLen
+
 let inline manhattanLen (x, y, z) = abs x + abs y + abs z
 let inline manhattanDist t1 t2 = sub t1 t2 |> manhattanLen
 
